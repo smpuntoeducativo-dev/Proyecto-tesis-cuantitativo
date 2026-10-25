@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Proyecto de Tesis Cuantitativa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: cabecera de proyecto + pestañas por capítulo del manual + panel de trabajo de una columna */
+:root{
+  --bg:#f3f6fb; --paper:#ffffff; --ink:#14223b; --muted:#56647c; --line:#d6deeb; --line-2:#e8edf5;
+  --accent:#1f4e9c; --accent-ink:#ffffff; --accent-soft:#e5edfa;
+  --ok:#1b7348; --ok-soft:#e1f3e8; --warn:#8f5b00; --warn-soft:#fcf0d9; --bad:#b0271f; --bad-soft:#fbe5e3;
+  --f-display:'Newsreader', Georgia, 'Times New Roman', serif;
+  --f-body:'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono:'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --r:8px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1420; --paper:#161f31; --ink:#e5eaf4; --muted:#9ba8be; --line:#2a3752; --line-2:#212c42;
+  --accent:#86aef2; --accent-ink:#0e1420; --accent-soft:#1d2c49;
+  --ok:#66c897; --ok-soft:#143021; --warn:#e6b45c; --warn-soft:#332710; --bad:#f2897f; --bad-soft:#3a1b19; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0e1420; --paper:#161f31; --ink:#e5eaf4; --muted:#9ba8be; --line:#2a3752; --line-2:#212c42;
+  --accent:#86aef2; --accent-ink:#0e1420; --accent-soft:#1d2c49;
+  --ok:#66c897; --ok-soft:#143021; --warn:#e6b45c; --warn-soft:#332710; --bad:#f2897f; --bad-soft:#3a1b19; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.wrap{max-width:1000px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{background:var(--paper);border-bottom:1px solid var(--line)}
+header.top .wrap{padding-block:18px 14px;display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(22px,3.4vw,30px);line-height:1.15;margin:4px 0 0;text-wrap:balance}
+.headmeta{display:flex;flex-direction:column;gap:6px;align-items:flex-end;min-width:200px}
+.status{font-size:12.5px;color:var(--muted);display:flex;gap:6px;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)}
+.prog{width:220px;max-width:100%;height:6px;background:var(--line-2);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.progtxt{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line)}
+nav.tabs .wrap{display:flex;gap:2px;overflow-x:auto;scrollbar-width:thin}
+nav.tabs button{flex:none;border:0;background:none;color:var(--muted);font:500 13.5px var(--f-body);padding:12px 12px 10px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+nav.tabs button:hover{color:var(--ink)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+main .wrap{padding-block:22px 80px}
+.banner{background:var(--accent-soft);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:18px;font-size:14px}
+.chapter{font-family:var(--f-display);font-size:24px;font-weight:600;margin:0 0 4px}
+.lead{color:var(--muted);margin:0 0 18px;max-width:70ch}
+section.blk{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:16px;display:flex;flex-direction:column;gap:14px}
+section.blk>h3{font-family:var(--f-display);font-size:19px;font-weight:600;margin:0;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+section.blk>h3 .num{font-family:var(--f-mono);font-size:13px;color:var(--accent);font-weight:500}
+.guide{font-size:13px;color:var(--muted);margin:-6px 0 0;max-width:75ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 16px}
+.grid>*{min-width:0}
+.f{display:flex;flex-direction:column;gap:5px;min-width:0}
+.f>label,.lbl{font-size:13px;font-weight:600}
+.f .hint{font-size:12px;color:var(--muted)}
+input[type=text],input[type=number],select,textarea{width:100%;font:inherit;font-size:14.5px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+textarea{resize:vertical;line-height:1.5}
+input:hover,select:hover,textarea:hover{border-color:var(--muted)}
+.chk{display:flex;gap:8px;align-items:center;font-size:14px}
+.chk input{width:18px;height:18px;accent-color:var(--accent)}
+.frow{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.count{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.count.over{color:var(--bad);font-weight:600}
+
+.btn{font:600 13.5px var(--f-body);border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;padding:8px 12px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.pri:hover{filter:brightness(1.08);color:var(--accent-ink)}
+.btn.sm{font-size:12.5px;padding:5px 9px}
+.btn.ghost{border-color:transparent;background:none;color:var(--accent);padding-inline:4px}
+.btn.del{color:var(--bad)} .btn.del:hover{border-color:var(--bad)}
+.btn:disabled{opacity:.55;cursor:wait}
+.btn.confirm{background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+
+.ai-out{border:1px dashed var(--accent);background:var(--accent-soft);border-radius:6px;padding:10px 12px;font-size:14px;white-space:pre-wrap;display:flex;flex-direction:column;gap:8px}
+.ai-out:empty{display:none}
+.ai-out .actions{white-space:normal}
+
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.neu{background:var(--line-2);color:var(--muted)}
+.note{border-left:3px solid var(--warn);background:var(--warn-soft);padding:10px 12px;border-radius:0 6px 6px 0;font-size:13.5px}
+.note.bad{border-color:var(--bad);background:var(--bad-soft)}
+.note.ok{border-color:var(--ok);background:var(--ok-soft)}
+.note.info{border-color:var(--accent);background:var(--accent-soft)}
+
+.row-esp{border:1px solid var(--line-2);border-radius:6px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--bg)}
+.row-esp .rh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.row-esp .rh b{font-family:var(--f-mono);font-size:12.5px;color:var(--accent)}
+
+.scheme{font-family:var(--f-mono);font-size:15px;background:var(--bg);border:1px solid var(--line-2);border-radius:6px;padding:12px 14px;white-space:pre;overflow-x:auto}
+.formula{font-family:var(--f-mono);font-size:13.5px;background:var(--bg);border:1px solid var(--line-2);border-radius:6px;padding:12px 14px;overflow-x:auto;line-height:1.8}
+.result{font-size:15px}
+.result b{font-family:var(--f-mono);font-size:20px;color:var(--accent)}
+.rec{display:flex;flex-direction:column;gap:6px;font-size:14px}
+.rec strong{font-size:16px;color:var(--accent)}
+
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border-bottom:1px solid var(--line-2);border-right:1px solid var(--line-2);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink)}
+td input,td select{padding:6px 8px;font-size:13.5px}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.matriz td{min-width:180px;font-size:13px;line-height:1.45}
+.matriz td p{margin:0 0 8px}
+.matriz td .mh{font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-top:6px}
+.gantt td{text-align:center;padding:4px}
+.gantt td:first-child{text-align:left;min-width:200px}
+.gantt input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
+
+details.ant{border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+details.ant>summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+details.ant>summary::-webkit-details-marker{display:none}
+details.ant>summary .t{font-weight:600;flex:1 1 220px;min-width:0}
+details.ant .body{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px}
+.para{font-family:var(--f-display);font-size:16px;line-height:1.55;background:var(--paper);border:1px solid var(--line-2);border-radius:6px;padding:12px 14px}
+.apa{font-family:var(--f-display);font-size:15.5px;padding-left:2em;text-indent:-2em;line-height:1.5}
+.stats{display:flex;flex-wrap:wrap;gap:8px}
+.links{display:flex;flex-wrap:wrap;gap:8px}
+.links a{font-size:13px;color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:4px 11px;text-decoration:none;background:var(--paper)}
+.links a:hover{border-color:var(--accent)}
+.empty{border:1px dashed var(--line);border-radius:6px;padding:22px;text-align:center;color:var(--muted);font-size:14px}
+
+.checklist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.checklist li{display:flex;gap:10px;align-items:flex-start;padding:9px 4px;border-bottom:1px solid var(--line-2);font-size:14px}
+.checklist li .ic{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700}
+.checklist li.ok .ic{background:var(--ok-soft);color:var(--ok)}
+.checklist li.no .ic{background:var(--bad-soft);color:var(--bad)}
+.checklist li .go{margin-left:auto}
+.bigscore{font-family:var(--f-display);font-size:44px;font-weight:600;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
+
+.modal{position:fixed;inset:0;background:rgba(10,16,30,.55);z-index:20;display:flex;align-items:flex-start;justify-content:center;padding:max(24px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 24px max(12px,env(safe-area-inset-left,0px));overflow:auto}
+.modal .box{background:var(--paper);border-radius:var(--r);max-width:860px;width:100%;display:flex;flex-direction:column;max-height:calc(100vh - 48px)}
+.modal .mhd{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.modal .doc{overflow:auto;padding:24px;background:#fff;color:#111;font-family:'Times New Roman',Times,serif;font-size:15px;line-height:1.5}
+.modal .doc table{font-size:12.5px} .modal .doc th{background:#e9eef7;color:#111} .modal .doc td,.modal .doc th{border:1px solid #999}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:6px;font-size:14px;z-index:30;max-width:calc(100% - 32px)}
+@media (max-width:560px){ .headmeta{align-items:flex-start} section.blk{padding:14px} }
+@media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+html.solo [data-act="improve"],html.solo [data-act="draft"],html.solo [data-act="extract"],html.solo [data-act="suggest"],html.solo [data-act="improvePara"],html.solo .claude-only{display:none!important}
+</style>
+</head>
+<body>
+
+
+<header class="top">
+  <div class="wrap">
+    <div style="min-width:0;flex:1 1 380px">
+      <div class="eyebrow">Proyecto de tesis · enfoque cuantitativo</div>
+      <h1 id="hTitle">Proyecto sin título</h1>
+    </div>
+    <div class="headmeta">
+      <div class="status"><span class="dot" id="sDot"></span><span id="sTxt">Cargando…</span></div>
+      <div class="prog" aria-hidden="true"><i id="pBar"></i></div>
+      <div class="progtxt" id="pTxt"></div>
+    </div>
+  </div>
+</header>
+<nav class="tabs" aria-label="Secciones del proyecto"><div class="wrap" id="tabs" role="tablist"></div></nav>
+<main><div class="wrap" id="panel"></div></main>
+<input type="file" id="fileIn" accept="application/json,.json" hidden>
+
+<script>
+(function(){
+"use strict";
+if(!window.claude) document.documentElement.classList.add("solo");
+const YEAR = new Date().getFullYear();
+const LS_KEY = "tesisCuanti.v1";
+const SECTIONS = ["config","ficha","cap1","ant","cap2","cap3","cap4","refs","meta"];
+
+/* ---------- Catálogos ---------- */
+const DIS = {
+  descriptivo:{label:"No experimental – Descriptivo", fam:"noexp", esquema:"M ──── O", leyenda:["M: muestra de estudio","O: observación o medición de la variable"]},
+  correlacional:{label:"No experimental – Correlacional", fam:"noexp", esquema:"        Ox\n      ↗\n   M    r\n      ↘\n        Oy", leyenda:["M: muestra de estudio","Ox: observación de la variable 1","Oy: observación de la variable 2","r: relación entre las variables"]},
+  causal:{label:"No experimental – Correlacional causal", fam:"noexp", esquema:"M:  Ox ──→ Oy", leyenda:["M: muestra de estudio","Ox: variable independiente (causa)","Oy: variable dependiente (efecto)","→: influencia de Ox sobre Oy"]},
+  pre:{label:"Pre-experimental (pre y postest con un grupo)", fam:"exp", esquema:"G:  O1 ──  X  ── O2", leyenda:["G: grupo experimental","O1: pretest","X: aplicación del tratamiento o programa","O2: postest"]},
+  cuasi:{label:"Cuasi-experimental (grupo experimental y control)", fam:"exp", esquema:"GE:  O1 ──  X  ── O2\nGC:  O3 ──  –  ── O4", leyenda:["GE: grupo experimental (no aleatorizado)","GC: grupo control","O1, O3: pretest","X: tratamiento; –: sin tratamiento","O2, O4: postest"]},
+  experimental:{label:"Experimental puro (aleatorizado: DCA, DBCA, factorial)", fam:"exp", esquema:"R GE:  O1 ──  X  ── O2\nR GC:  O3 ──  –  ── O4\n\nDCA:  Yij = μ + τi + εij\nDBCA: Yij = μ + τi + βj + εij", leyenda:["R: asignación aleatoria","τi: efecto del i-ésimo tratamiento","βj: efecto del j-ésimo bloque","εij: error experimental"]}
+};
+const DIS_OPTS = Object.entries(DIS).map(([k,v])=>[k,v.label]);
+const ESCALAS = [["","Elige…"],["nominal","Nominal"],["ordinal","Ordinal (Likert, niveles)"],["intervalo","Intervalo o razón (numérica)"]];
+const INDEX = ["","Scopus","Web of Science","SciELO","Redalyc","Latindex","DOAJ","RENATI (SUNEDU)","ALICIA (CONCYTEC)","Repositorio institucional","Otra / no indexada"].map(x=>[x,x||"Elige…"]);
+const AMB = [["","Elige…"],["internacional","Internacional"],["nacional","Nacional"],["local","Local o regional"]];
+
+/* ---------- Estado ---------- */
+function blank(){
+  return {
+    config:{tema:"",v1:"",v2:"",dims1:"",dims2:"",poblacion:"",lugar:"Tarapoto, San Martín",anio:String(YEAR),diseno:"correlacional",tipo:"basica",nivel:""},
+    ficha:{facultad:"",escuela:"",titulo:"",grado:"",autor:"",autorOrcid:"",asesor:"",asesorOrcid:"",coasesor:"",coasesorOrcid:"",area:"",linea:"",sublinea:"",grupo:"",dependencia:"",unidad:"",contraparte:"",contraPais:"",contraOrcid:"",resumen:""},
+    cap1:{marco:"",pg:"",og:"",hg:"",hg0:"",esp:[{pe:"",oe:"",h1:"",h0:""}],justificacion:""},
+    ant:{items:[]},
+    cap2:{fundamentos:"",terminos:[]},
+    cap3:{ambito:"",variables:[],tabla1:[],parametros:"",nivelTxt:"",
+      muestra:{tipo:"finita",N:"",conf:"95",p:"0.5",e:"0.05",muestreo:"Aleatorio simple",descripcion:"",inclusion:"",exclusion:"",t:"",r:""},
+      tecnicas:"",validez:"",escala:"",normal:"",grupos:"2",alfa:"",analisis:"",proc:[],transversal:"",autorizaciones:"No aplica.",ambiental:"No aplica.",
+      etica:"El investigador declara que su intervención respetará los principios éticos generales de la investigación; particularmente la integridad, el respeto a las personas, el respeto al ecosistema, la beneficencia y la justicia. Se solicitará el consentimiento informado de los participantes y se garantizará la confidencialidad de la información recogida."},
+    cap4:{rrhh:"",materiales:"",bienes:[{partida:"",desc:"",cant:"",vu:""}],equipos:[],admin:"",tc:"",financiamiento:"Autofinanciado",periodos:"6",unidad:"Mes",acts:[]},
+    refs:{otras:"",anexos:{matriz:true,operacionalizacion:true,instrumento:false,validacion:false,consentimiento:false,croquis:false,base:false}},
+    meta:{ejemplo:false,updatedAt:0}
+  };
+}
+function defaultActs(){
+  return ["Revisión bibliográfica","Elaboración y aprobación del proyecto","Validación y confiabilidad del instrumento","Recolección de datos","Procesamiento y análisis estadístico","Redacción del informe final","Sustentación"].map((n,i)=>({nombre:n,m:Array.from({length:6},(_,j)=>j===Math.min(i,5)||(i===3&&j===4))}));
+}
+function example(){
+  const s = blank();
+  Object.assign(s.config,{tema:"Hábitos de estudio y rendimiento académico",v1:"hábitos de estudio",v2:"rendimiento académico",
+    dims1:"organización del tiempo, técnicas de estudio, ambiente de estudio, motivación",dims2:"logro conceptual, logro procedimental, logro actitudinal",
+    poblacion:"estudiantes de quinto grado de secundaria de una institución educativa pública",lugar:"Tarapoto, San Martín",diseno:"correlacional",tipo:"basica"});
+  Object.assign(s.ficha,{facultad:"Educación y Humanidades",escuela:"Educación Secundaria",grado:"título profesional de Licenciado en Educación"});
+  generar(s);
+  s.cap3.muestra.N="120"; s.cap3.escala="ordinal"; s.cap3.normal="no";
+  s.cap4.acts = defaultActs();
+  s.meta.ejemplo = true;
+  return s;
+}
+let state = null;
+const dirty = new Set();
+
+/* ---------- Utilidades ---------- */
+const $ = s=>document.querySelector(s);
+const esc = v => String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const words = s => String(s||"").trim().split(/\s+/).filter(Boolean).length;
+const cap = s => { s=String(s||"").trim(); return s? s[0].toUpperCase()+s.slice(1):s; };
+const low = s => { s=String(s||"").trim(); return s? s[0].toLowerCase()+s.slice(1):s; };
+const list = s => String(s||"").split(/[,;\n]/).map(x=>x.trim()).filter(Boolean);
+const num = v => { const n=parseFloat(String(v??"").replace(",",".")); return isFinite(n)?n:NaN; };
+const money = n => "S/ " + (isFinite(n)?n:0).toLocaleString("es-PE",{minimumFractionDigits:2,maximumFractionDigits:2});
+function get(path){ return path.split(".").reduce((o,k)=>o==null?undefined:o[k], state); }
+function set(path,val){
+  const ks=path.split("."); let o=state;
+  for(let i=0;i<ks.length-1;i++){ const k=ks[i]; if(o[k]==null||typeof o[k]!=="object") o[k]=/^\d+$/.test(ks[i+1])?[]:{}; o=o[k]; }
+  o[ks[ks.length-1]]=val; dirty.add(ks[0]); state.meta.updatedAt=Date.now(); dirty.add("meta"); scheduleSave();
+}
+function toast(msg){ const t=document.createElement("div"); t.className="toast"; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),3200); }
+const ORCID_RE=/^(https:\/\/orcid\.org\/)?\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/;
+const fam = d => DIS[d]?.fam || "";
+const isExp = () => fam(state.config.diseno)==="exp";
+
+/* ---------- Generador de propuesta (plantillas) ---------- */
+function ctxTxt(c){ return [c.poblacion?("en "+low(c.poblacion)):"", c.lugar||"", c.anio||""].filter(Boolean).join(", "); }
+function generar(s){
+  const c=s.config, V1=low(c.v1)||"[variable 1]", V2=low(c.v2)||"[variable 2]", ctx=ctxTxt(c), d=c.diseno;
+  const exp = fam(d)==="exp";
+  const dims = exp ? list(c.dims2) : list(c.dims1);
+  let title, pg, og, hg, hg0, esp;
+  if(d==="descriptivo"){
+    title=`${cap(V1)} ${ctx}`;
+    pg=`¿Cuál es el nivel de ${V1} ${ctx}?`; og=`Determinar el nivel de ${V1} ${ctx}.`;
+    hg="En estudios descriptivos de este nivel no se formula hipótesis."; hg0="";
+    esp=dims.map(x=>({pe:`¿Cuál es el nivel de ${low(x)} ${ctx}?`,oe:`Identificar el nivel de ${low(x)} ${ctx}.`,h1:"",h0:""}));
+  } else if(d==="correlacional"){
+    title=`${cap(V1)} y ${V2} ${ctx}`;
+    pg=`¿Qué relación existe entre ${V1} y ${V2} ${ctx}?`; og=`Determinar la relación entre ${V1} y ${V2} ${ctx}.`;
+    hg=`Existe relación significativa entre ${V1} y ${V2} ${ctx}.`; hg0=`No existe relación significativa entre ${V1} y ${V2} ${ctx}.`;
+    esp=dims.map(x=>({pe:`¿Qué relación existe entre ${low(x)} y ${V2} ${ctx}?`,oe:`Establecer la relación entre ${low(x)} y ${V2} ${ctx}.`,h1:`Existe relación significativa entre ${low(x)} y ${V2} ${ctx}.`,h0:`No existe relación significativa entre ${low(x)} y ${V2} ${ctx}.`}));
+  } else if(d==="causal"){
+    title=`Influencia de ${V1} en ${V2} ${ctx}`;
+    pg=`¿Cuál es la influencia de ${V1} en ${V2} ${ctx}?`; og=`Determinar la influencia de ${V1} en ${V2} ${ctx}.`;
+    hg=`${cap(V1)} influye significativamente en ${V2} ${ctx}.`; hg0=`${cap(V1)} no influye significativamente en ${V2} ${ctx}.`;
+    esp=dims.map(x=>({pe:`¿Cuál es la influencia de ${low(x)} en ${V2} ${ctx}?`,oe:`Determinar la influencia de ${low(x)} en ${V2} ${ctx}.`,h1:`${cap(x)} influye significativamente en ${V2} ${ctx}.`,h0:`${cap(x)} no influye significativamente en ${V2} ${ctx}.`}));
+  } else {
+    title=`Efecto de ${V1} en ${V2} ${ctx}`;
+    pg=`¿Cuál es el efecto de ${V1} en ${V2} ${ctx}?`; og=`Determinar el efecto de ${V1} en ${V2} ${ctx}.`;
+    hg=`La aplicación de ${V1} tiene un efecto significativo en ${V2} ${ctx}.`; hg0=`La aplicación de ${V1} no tiene un efecto significativo en ${V2} ${ctx}.`;
+    esp=dims.map(x=>({pe:`¿Cuál es el efecto de ${V1} en ${low(x)} ${ctx}?`,oe:`Determinar el efecto de ${V1} en ${low(x)} ${ctx}.`,h1:`La aplicación de ${V1} tiene un efecto significativo en ${low(x)} ${ctx}.`,h0:`La aplicación de ${V1} no tiene un efecto significativo en ${low(x)} ${ctx}.`}));
+  }
+  if(!esp.length) esp=[{pe:"",oe:"",h1:"",h0:""}];
+  s.ficha.titulo=cap(title.replace(/\s+/g," ").trim());
+  Object.assign(s.cap1,{pg,og,hg,hg0,esp});
+  const tipos = d==="descriptivo"?["única",""]: (d==="correlacional"?["correlativa","correlativa"]:["independiente","dependiente"]);
+  s.cap3.variables=[
+    {nombre:cap(c.v1),tipo:tipos[0],defCon:"",defOp:"",dims:c.dims1,indicadores:"",items:"",escala:"",instrumento:""},
+    ...(d==="descriptivo"&&!c.v2?[]:[{nombre:cap(c.v2),tipo:tipos[1]||"correlativa",defCon:"",defOp:"",dims:c.dims2,indicadores:"",items:"",escala:"",instrumento:""}])
+  ];
+  s.cap3.tabla1 = esp.map((_,i)=>[{abstracta: dims[i]?cap(dims[i]):"",concreta:"",medio:"",unidad:""}]);
+  s.cap3.proc = esp.map(()=> "");
+  s.cap3.nivelTxt = d==="descriptivo"?"Descriptivo":(d==="correlacional"?"Correlacional":(d==="causal"?"Explicativo (correlacional causal)":"Experimental / explicativo"));
+}
+
+/* ---------- Asistente estadístico ---------- */
+function recomendar(){
+  const c=state.cap3, d=state.config.diseno, esc_=c.escala, nm=c.normal, n=nFinal(), g=num(c.grupos)||2;
+  const norm = isFinite(n)&&n>0 ? (n<50?"Shapiro-Wilk (n < 50)":"Kolmogorov-Smirnov con corrección de Lilliefors (n ≥ 50)") : "Shapiro-Wilk si n < 50; Kolmogorov-Smirnov si n ≥ 50";
+  let main="", why="", extra=[];
+  const pend = "Completa la escala y la normalidad para afinar la recomendación.";
+  if(d==="descriptivo"){ main="Estadística descriptiva"; why="Frecuencias absolutas y porcentuales, media, mediana y desviación estándar, presentadas en tablas y figuras. No se contrasta hipótesis."; }
+  else if(fam(d)==="noexp"){
+    if(esc_==="nominal"){ main="Chi cuadrado de independencia"; why="Ambas variables son categóricas nominales; complementa con V de Cramer para la fuerza de la asociación."; }
+    else if(esc_==="ordinal"){ main="Rho de Spearman"; why="Las variables son ordinales (por ejemplo, escala Likert o niveles), por lo que corresponde una prueba no paramétrica. Alternativa: Tau-b de Kendall."; }
+    else if(esc_==="intervalo"){ if(nm==="si"){ main="r de Pearson"; why="Variables numéricas con distribución normal (p > 0.05 en la prueba de normalidad).";} else if(nm==="no"){ main="Rho de Spearman"; why="Variables numéricas sin distribución normal (p < 0.05 en la prueba de normalidad).";} else { main="r de Pearson o Rho de Spearman"; why="Pearson si los datos son normales (p > 0.05); Spearman si no lo son."; } }
+    else { main="Pendiente"; why=pend; }
+    if(d==="causal"&&esc_){ extra.push(esc_==="intervalo"?"Para medir la influencia: regresión lineal simple o múltiple (R², coeficientes β).":esc_==="ordinal"?"Para medir la influencia: regresión logística ordinal (pseudo R² de Nagelkerke).":"Para medir la influencia: regresión logística binaria o multinomial."); }
+  } else if(d==="pre"){
+    if(esc_==="nominal"){ main="Prueba de McNemar"; why="Compara proporciones del pretest y postest en el mismo grupo con variable dicotómica."; }
+    else if(esc_==="ordinal"||nm==="no"){ main="Prueba de rangos con signo de Wilcoxon"; why="Muestras relacionadas (pre y post del mismo grupo) sin normalidad u ordinales."; }
+    else if(nm==="si"){ main="t de Student para muestras relacionadas"; why="Muestras relacionadas con diferencias distribuidas normalmente."; }
+    else { main="t de Student relacionada o Wilcoxon"; why="t si las diferencias pre–post son normales; Wilcoxon si no lo son."; }
+  } else if(d==="cuasi"||(d==="experimental"&&g<=2)){
+    if(esc_==="nominal"){ main="Chi cuadrado de homogeneidad"; why="Compara proporciones entre grupo experimental y control."; }
+    else if(esc_==="ordinal"||nm==="no"){ main="U de Mann-Whitney"; why="Compara el postest de dos grupos independientes sin normalidad u ordinales. Dentro de cada grupo (pre vs post) usa Wilcoxon."; }
+    else if(nm==="si"){ main="t de Student para muestras independientes"; why="Compara el postest de dos grupos independientes con normalidad; verifica homogeneidad de varianzas con Levene. Dentro de cada grupo usa t relacionada."; }
+    else { main="t independiente o U de Mann-Whitney"; why="t si hay normalidad y homogeneidad de varianzas; Mann-Whitney si no."; }
+    if(d==="cuasi") extra.push("Opcional: ANCOVA con el pretest como covariable para controlar diferencias iniciales.");
+  } else {
+    if(esc_==="ordinal"||nm==="no"){ main="Kruskal-Wallis"; why=`Compara ${g} tratamientos sin normalidad; post hoc por pares con Dunn y corrección de Bonferroni.`; }
+    else if(esc_==="nominal"){ main="Chi cuadrado"; why="Compara proporciones entre tratamientos."; }
+    else { main="ANOVA (DCA o DBCA) con prueba de Tukey o Duncan"; why=`Compara ${g} tratamientos; verifica normalidad de residuos (Shapiro-Wilk) y homogeneidad de varianzas (Levene o Bartlett). Reporta el coeficiente de variación (CV %).`; }
+  }
+  return {main,why,extra,norm};
+}
+
+/* ---------- Muestra ---------- */
+const ZT = {"90":1.645,"95":1.96,"99":2.576};
+function calcMuestra(){
+  const m=state.cap3.muestra, Z=ZT[m.conf]||1.96, p=num(m.p), q=1-p, e=num(m.e), N=num(m.N);
+  if(m.tipo==="censal"){ return {n:isFinite(N)?N:NaN, html: isFinite(N)?`Muestra censal: se trabajará con toda la población, <b>n = ${N}</b>.`:"Ingresa el tamaño de la población (N)."}; }
+  if(m.tipo==="noprob"){ return {n:NaN, html:"Muestreo no probabilístico: describe abajo el criterio y el número de participantes."}; }
+  if(!(p>0&&p<1)||!(e>0&&e<1)) return {n:NaN, html:"Revisa p (entre 0 y 1) y e (por ejemplo 0.05)."};
+  if(m.tipo==="infinita"){
+    const n=(Z*Z*p*q)/(e*e), nr=Math.ceil(n);
+    return {n:nr, html:`<div class="formula">n = Z² · p · q / e²<br>n = (${Z})² · ${p} · ${q.toFixed(2)} / (${e})²<br>n = ${n.toFixed(2)}</div><div class="result">Tamaño de muestra: <b>n = ${nr}</b></div>`};
+  }
+  if(!(N>0)) return {n:NaN, html:"Ingresa el tamaño de la población (N)."};
+  const n=(Z*Z*p*q*N)/(e*e*(N-1)+Z*Z*p*q), nr=Math.ceil(n);
+  return {n:nr, html:`<div class="formula">n = Z² · p · q · N / [ e² · (N − 1) + Z² · p · q ]<br>n = (${Z})² · ${p} · ${q.toFixed(2)} · ${N} / [ (${e})² · (${N} − 1) + (${Z})² · ${p} · ${q.toFixed(2)} ]<br>n = ${n.toFixed(2)}</div><div class="result">Tamaño de muestra: <b>n = ${nr}</b></div>`};
+}
+function nFinal(){
+  const m=state.cap3.muestra;
+  if(isExp() && num(m.t)>0 && num(m.r)>0 && state.config.diseno==="experimental") return num(m.t)*num(m.r);
+  return calcMuestra().n;
+}
+
+/* ---------- Cronbach ---------- */
+function cronbach(txt){
+  const rows=String(txt||"").trim().split(/\n+/).map(r=>r.trim().split(/[\t;, ]+/).map(Number)).filter(r=>r.length>1&&r.every(isFinite));
+  if(rows.length<3) return null;
+  const k=rows[0].length; if(rows.some(r=>r.length!==k)) return {err:"Todas las filas deben tener el mismo número de ítems."};
+  const v=a=>{const m=a.reduce((s,x)=>s+x,0)/a.length; return a.reduce((s,x)=>s+(x-m)**2,0)/(a.length-1);};
+  let si=0; for(let j=0;j<k;j++) si+=v(rows.map(r=>r[j]));
+  const st=v(rows.map(r=>r.reduce((s,x)=>s+x,0)));
+  if(!st) return {err:"La varianza total es cero."};
+  const a=(k/(k-1))*(1-si/st);
+  const lvl = a>=.9?"excelente":a>=.8?"buena":a>=.7?"aceptable":a>=.6?"cuestionable":"baja";
+  return {a,k,n:rows.length,lvl};
+}
+
+/* ---------- Antecedentes ---------- */
+function antCoh(a){
+  const mine=state.config.diseno; if(!a.diseno) return ["neu","Diseño sin indicar"];
+  if(a.diseno===mine) return ["ok","Diseño coherente"];
+  if(fam(a.diseno)===fam(mine)) return ["warn","Diseño afín"];
+  return ["bad","Diseño no coherente"];
+}
+function antAge(a){ const y=parseInt(a.anio,10); if(!y) return ["neu","Año sin indicar"]; return y>=YEAR-5?["ok",`${y} · vigente`]:["bad",`${y} · más de 5 años`]; }
+function antPara(a){
+  const au=a.autoresCita||"[Autor(es)]", y=a.anio||"[año]";
+  const dis = DIS[a.diseno]? low(DIS[a.diseno].label.replace(/^No experimental – /,"")).replace(/\s*\(.*\)/,"") : "";
+  let t = `${au} (${y})${a.pais?`, en ${a.pais},`:""} ${a.objetivo?low(a.objetivo).replace(/\.$/,""):`desarrollaron la investigación titulada “${a.titulo||"[título]"}”`}`;
+  const met=[dis?`un diseño ${dis}`:"", a.muestra?`una muestra de ${low(a.muestra)}`:""].filter(Boolean);
+  if(met.length) t+=`, con ${met.join(" y ")}`;
+  if(a.instrumento) t+=`, aplicando ${low(a.instrumento)}`;
+  t+=". ";
+  if(a.resultado) t+=`Encontraron que ${low(a.resultado).replace(/\.$/,"")}${a.prueba?` (${a.prueba})`:""}. `;
+  if(a.conclusion) t+=`Concluyeron que ${low(a.conclusion).replace(/\.$/,"")}. `;
+  if(a.aporte) t+=cap(a.aporte).replace(/\.?$/,".");
+  return t.trim();
+}
+function antAPA(a){
+  const au=(a.autoresRef||a.autoresCita||"[Autor, A.]").replace(/\.?$/,"."), y=a.anio||"s. f.";
+  const link = a.doi? `https://doi.org/${String(a.doi).replace(/^https?:\/\/(dx\.)?doi\.org\//,"")}` : (a.url||"");
+  if(a.tipoFuente==="tesis"){
+    return `${esc(au)} (${esc(y)}). <i>${esc(a.titulo||"[Título]")}</i> [${esc(a.grado||"Tesis de pregrado")}, ${esc(a.fuente||"[Universidad]")}]. ${a.repositorio?esc(a.repositorio)+". ":""}${esc(link)}`;
+  }
+  return `${esc(au)} (${esc(y)}). ${esc((a.titulo||"[Título]").replace(/\.?$/,""))}. <i>${esc(a.fuente||"[Revista]")}</i>${a.vol?`, <i>${esc(a.vol)}</i>`:""}${a.num?`(${esc(a.num)})`:""}${a.pags?`, ${esc(a.pags)}`:""}. ${esc(link)}`;
+}
+function blankAnt(){ return {autoresCita:"",autoresRef:"",anio:"",pais:"",ambito:"",tipoFuente:"articulo",titulo:"",fuente:"",vol:"",num:"",pags:"",grado:"",repositorio:"",indexacion:"",doi:"",url:"",diseno:"",objetivo:"",muestra:"",instrumento:"",prueba:"",resultado:"",conclusion:"",aporte:"",verificado:false,origen:"manual"}; }
+function searchLinks(){
+  const c=state.config; const q=[c.v1,c.v2].filter(Boolean).join(" ");
+  const kw = {descriptivo:"",correlacional:"correlación",causal:"influencia",pre:"pre-experimental pretest postest",cuasi:"cuasi-experimental grupo control",experimental:"experimental tratamientos"}[c.diseno]||"";
+  const full=encodeURIComponent((q+" "+kw).trim()), qq=encodeURIComponent(q);
+  return [
+    ["Google Académico",`https://scholar.google.com/scholar?q=${full}&as_ylo=${YEAR-5}`],
+    ["SciELO",`https://search.scielo.org/?q=${full}&lang=es`],
+    ["Redalyc",`https://www.redalyc.org/busquedaArticuloFiltros.oa?q=${qq}`],
+    ["ALICIA (CONCYTEC)",`https://alicia.concytec.gob.pe/vufind/Search/Results?lookfor=${full}`],
+    ["LA Referencia",`https://www.lareferencia.info/vufind/Search/Results?lookfor=${full}`],
+    ["DOAJ",`https://doaj.org/search/articles?ref=homepage-box&source=%7B%22query%22%3A%7B%22query_string%22%3A%7B%22query%22%3A%22${qq}%22%7D%7D%7D`]
+  ];
+}
+
+/* ---------- Campos ---------- */
+function F(path,label,o={}){
+  const id="f_"+path.replace(/\./g,"_"), v=get(path);
+  let input;
+  const ph=o.ph?` placeholder="${esc(o.ph)}"`:"";
+  const rr=o.rr?" data-rr":"";
+  if(o.t==="area") input=`<textarea id="${id}" data-bind="${path}" rows="${o.rows||4}"${ph}>${esc(v)}</textarea>`;
+  else if(o.t==="sel") input=`<select id="${id}" data-bind="${path}"${rr}>${o.o.map(([k,l])=>`<option value="${esc(k)}"${String(v??"")===String(k)?" selected":""}>${esc(l)}</option>`).join("")}</select>`;
+  else if(o.t==="chk") return `<label class="chk"><input type="checkbox" id="${id}" data-bind="${path}"${v?" checked":""}${rr}> ${label}</label>`;
+  else input=`<input type="${o.t==="num"?"number":"text"}" id="${id}" data-bind="${path}" value="${esc(v)}"${ph}${o.t==="num"?' step="any" inputmode="decimal"':""}${o.list?` list="${o.list}"`:""}>`;
+  const tools=[];
+  if(o.max) tools.push(`<span class="count" data-count="${path}" data-max="${o.max}" data-unit="${o.unit||"palabras"}"></span>`);
+  if(o.orcid) tools.push(`<span class="count" data-orcid="${path}"></span>`);
+  const btns=[];
+  if(o.draft) btns.push(`<button class="btn sm" data-act="draft" data-path="${path}" data-kind="${o.draft}">Redactar borrador con Claude</button>`);
+  if(o.ai) btns.push(`<button class="btn sm" data-act="improve" data-path="${path}" data-label="${esc(label)}">Mejorar redacción</button>`);
+  return `<div class="f"${o.span?` style="grid-column:1/-1"`:""}>
+    <div class="frow"><label for="${id}">${label}</label>${tools.join("")}</div>
+    ${o.hint?`<div class="hint">${o.hint}</div>`:""}
+    ${input}
+    ${btns.length?`<div class="actions">${btns.join("")}</div>`:""}
+    ${(o.ai||o.draft)?`<div class="ai-out" data-aiout="${path}"></div>`:""}
+  </div>`;
+}
+const blk=(num,title,inner,guide)=>`<section class="blk"><h3>${num?`<span class="num">${num}</span>`:""}${title}</h3>${guide?`<p class="guide">${guide}</p>`:""}${inner}</section>`;
+
+/* ---------- Pestañas ---------- */
+const TABS=[["inicio","Inicio"],["ficha","Ficha"],["cap1","I. Introducción"],["cap2","II. Marco teórico"],["cap3","III. Materiales y métodos"],["cap4","IV. Administrativos"],["matriz","Matriz"],["referencias","Referencias"],["revision","Revisión"]];
+let tab = (location.hash||"").slice(1); if(!TABS.some(t=>t[0]===tab)) tab="inicio";
+const openAnt = new Set();
+
+const R = {};
+R.inicio=()=>{
+  const c=state.config, exp=isExp();
+  return `<h2 class="chapter">Configura tu investigación</h2>
+  <p class="lead">Escribe tus variables y elige el diseño. Con eso se genera una propuesta de título, problemas, objetivos e hipótesis coherentes, que luego ajustas en cada capítulo.</p>
+  ${blk("","Tema y variables",`<div class="grid">
+    ${F("config.tema","Tema o idea de investigación",{span:true,ph:"Ej.: Uso del biol en el rendimiento del maíz amarillo duro"})}
+    ${F("config.v1",exp?"Variable independiente (tratamiento o programa)":"Variable 1",{ph:exp?"Ej.: programa de lectura":"Ej.: hábitos de estudio"})}
+    ${F("config.v2",exp?"Variable dependiente":"Variable 2",{ph:"Ej.: rendimiento académico"})}
+    ${F("config.dims1",`Dimensiones de ${esc(c.v1||"la variable 1")}`,{hint:"Separadas por comas."+(exp?"":" En diseños correlacionales, cada una genera un problema específico."),ph:"dimensión 1, dimensión 2, dimensión 3"})}
+    ${F("config.dims2",`Dimensiones de ${esc(c.v2||"la variable 2")}`,{hint:"Separadas por comas."+(exp?" En diseños experimentales, cada una genera un problema específico.":""),ph:"dimensión 1, dimensión 2"})}
+    ${F("config.poblacion","Población o unidades de estudio",{ph:"Ej.: estudiantes de quinto de secundaria de la I. E. …"})}
+    ${F("config.lugar","Lugar")}
+    ${F("config.anio","Año")}
+  </div>`)}
+  ${blk("","Diseño de la investigación",`<div class="grid">
+    ${F("config.diseno","Diseño",{t:"sel",o:DIS_OPTS,rr:true,hint:"Controla la redacción, el esquema, los antecedentes y la prueba estadística."})}
+    ${F("config.tipo","Tipo de investigación (según la ficha)",{t:"sel",o:[["basica","Básica"],["aplicada","Aplicada"],["desarrollo","Desarrollo experimental"]]})}
+  </div>
+  <div class="scheme" aria-label="Esquema del diseño">${esc(DIS[c.diseno].esquema)}</div>
+  <div class="hint" style="font-size:13px;color:var(--muted)">${DIS[c.diseno].leyenda.map(esc).join(" · ")}</div>
+  <div class="actions"><button class="btn pri" data-act="generar" data-confirm="Esto reemplaza título, problemas, objetivos, hipótesis y variables. Toca otra vez para confirmar">Generar propuesta inicial</button></div>
+  <div data-derived="genPreview"></div>`)}
+  ${blk("","Tus datos",`<p class="guide" style="margin:0">El proyecto se guarda automáticamente en este navegador. Descarga un respaldo de vez en cuando: si borras los datos del navegador o cambias de equipo, lo recuperas con «Importar respaldo».</p>
+  <div class="actions">
+    <button class="btn" data-act="backup">Descargar respaldo (.json)</button>
+    <button class="btn" data-act="restore">Importar respaldo</button>
+    <button class="btn del" data-act="nuevo" data-confirm="Se borrará todo el proyecto. Toca otra vez para confirmar">Empezar un proyecto en blanco</button>
+  </div>`)}`;
+};
+R.ficha=()=>`<h2 class="chapter">Carátula y ficha de identificación</h2>
+  <p class="lead">Datos de la carátula y de la ficha del formato. El título admite como máximo 20 palabras, con solo la primera letra en mayúscula.</p>
+  ${blk("","Carátula",`<div class="grid">
+    ${F("ficha.titulo","Título del proyecto",{t:"area",rows:2,max:20,span:true})}
+    ${F("ficha.facultad","Facultad de")}
+    ${F("ficha.escuela","Escuela profesional de")}
+    ${F("ficha.grado","Para optar el",{ph:"título profesional de Ingeniero Agrónomo",span:true})}
+  </div>`)}
+  ${blk("","Equipo de investigación",`<div class="grid">
+    ${F("ficha.autor","Autor (nombres y apellidos)")}${F("ficha.autorOrcid","ORCID del autor",{orcid:true,ph:"https://orcid.org/0000-0000-0000-0000"})}
+    ${F("ficha.asesor","Asesor")}${F("ficha.asesorOrcid","ORCID del asesor",{orcid:true,ph:"https://orcid.org/0000-0000-0000-0000"})}
+    ${F("ficha.coasesor","Coasesor (opcional)")}${F("ficha.coasesorOrcid","ORCID del coasesor",{orcid:true,ph:"https://orcid.org/0000-0000-0000-0000"})}
+  </div>`)}
+  ${blk("","Línea y dependencia",`<div class="grid">
+    ${F("ficha.area","Área de investigación")}${F("ficha.linea","Línea de investigación")}${F("ficha.sublinea","Sublínea de investigación")}
+    ${F("ficha.grupo","Grupo de investigación (resolución)")}${F("ficha.dependencia","Dependencia local de soporte")}${F("ficha.unidad","Unidad o laboratorio")}
+    ${F("ficha.contraparte","Contraparte científica (institución)")}${F("ficha.contraPais","País")}${F("ficha.contraOrcid","ORCID de la contraparte",{orcid:true})}
+  </div>`)}
+  ${blk("","Resumen",`${F("ficha.resumen","Resumen",{t:"area",rows:8,max:300,draft:"resumen",ai:true,hint:"Introducción, objetivos, materiales y métodos y resultados esperados. Conviene redactarlo al final."})}`)}`;
+
+R.cap1=()=>{
+  const c1=state.cap1, desc=state.config.diseno==="descriptivo";
+  const rows=c1.esp.map((r,i)=>`<div class="row-esp">
+    <div class="rh"><b>Específico ${i+1}</b><button class="btn sm del" data-act="del" data-path="cap1.esp" data-i="${i}" aria-label="Quitar específico ${i+1}">Quitar</button></div>
+    <div class="grid">
+      ${F(`cap1.esp.${i}.pe`,"Problema específico",{t:"area",rows:2})}
+      ${F(`cap1.esp.${i}.oe`,"Objetivo específico",{t:"area",rows:2})}
+      ${desc?"":F(`cap1.esp.${i}.h1`,"Hipótesis específica (H1)",{t:"area",rows:2})}
+      ${desc?"":F(`cap1.esp.${i}.h0`,"Hipótesis nula (H0)",{t:"area",rows:2})}
+    </div></div>`).join("");
+  return `<h2 class="chapter">Capítulo I · Introducción a la investigación</h2>
+  <p class="lead">Sugerido: 4 páginas. Cada problema específico tiene su objetivo y su hipótesis en la misma fila, así se mantienen alineados.</p>
+  ${blk("1.1","Marco general del problema",F("cap1.marco","Descripción del problema",{t:"area",rows:10,max:900,draft:"marco",ai:true}),"Máximo 2 páginas (≈ 900 palabras). De lo general a lo particular, con párrafos de máximo 8 líneas y citas.")}
+  ${blk("1.2 · 1.3 · 1.4","Problema, hipótesis y objetivo generales",`<div class="grid">
+    ${F("cap1.pg","Problema general",{t:"area",rows:3})}
+    ${F("cap1.og","Objetivo general",{t:"area",rows:3})}
+    ${F("cap1.hg",desc?"Hipótesis general (opcional en descriptivos)":"Hipótesis general (H1)",{t:"area",rows:3})}
+    ${desc?"":F("cap1.hg0","Hipótesis nula (H0)",{t:"area",rows:3})}
+  </div>`,"La hipótesis es una oración bimembre y afirmativa que responde a la pregunta. El objetivo reemplaza la interrogante por un verbo en infinitivo.")}
+  ${blk("","Problemas, objetivos e hipótesis específicos",`${rows}
+    <div class="actions"><button class="btn" data-act="addEsp">Agregar específico</button></div>
+    <div data-derived="coherencia"></div>`)}
+  ${blk("1.5","Justificación de la investigación",F("cap1.justificacion","Justificación",{t:"area",rows:8,max:450,draft:"justificacion",ai:true}),"Máximo 1 página. De lo particular a lo general: impacto teórico, práctico, metodológico y social.")}`;
+};
+
+R.cap2=()=>{
+  const items=state.ant.items;
+  const cards = items.length? items.map((a,i)=>antCard(a,i)).join("") : `<div class="empty">Aún no hay antecedentes. Usa los buscadores, pega el resumen de un artículo para extraer sus datos o agrégalo manualmente.</div>`;
+  const ter=state.cap2.terminos.map((t,i)=>`<div class="row-esp"><div class="rh"><b>Término ${i+1}</b><button class="btn sm del" data-act="del" data-path="cap2.terminos" data-i="${i}">Quitar</button></div><div class="grid">${F(`cap2.terminos.${i}.t`,"Término")}${F(`cap2.terminos.${i}.d`,"Definición (máx. 8 líneas)",{t:"area",rows:2})}</div></div>`).join("");
+  return `<h2 class="chapter">Capítulo II · Marco teórico</h2>
+  <p class="lead">Máximo 10 páginas. Los antecedentes deben coincidir con tu diseño: <b>${esc(DIS[state.config.diseno].label)}</b>.</p>
+  ${blk("2.1","Antecedentes de la investigación",`
+    <div data-derived="antStats"></div>
+    <div class="lbl">1. Busca en fuentes indexadas y repositorios (últimos 5 años)</div>
+    <div class="links">${searchLinks().map(([n,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener">${n} ↗</a>`).join("")}</div>
+    <div class="lbl claude-only">2. Pega el resumen o los datos de un artículo o tesis que encontraste</div>
+    <textarea class="claude-only" id="extractTxt" rows="5" placeholder="Pega aquí el título, autores, año, revista, DOI y el resumen del artículo o tesis…"></textarea>
+    <div class="actions"><button class="btn pri" data-act="extract">Extraer ficha con Claude</button><button class="btn" data-act="addAnt">Agregar antecedente manualmente</button><button class="btn" data-act="suggest">Pedir sugerencias a Claude</button></div>
+    <div class="ai-out" data-aiout="ant"></div>
+    <div class="note">Las sugerencias de Claude pueden contener errores. Todo antecedente nuevo queda <b>por verificar</b>: abre su DOI, confirma autor, año y resultados, y marca la casilla de verificado.</div>
+    <div style="display:flex;flex-direction:column;gap:10px">${cards}</div>
+  `,"Mínimo seis antecedentes, de máximo cinco años, con el autor en rol activo al inicio del párrafo. Puedes ordenarlos de forma cronológica o por contexto.")}
+  ${blk("2.2","Fundamentos teóricos",F("cap2.fundamentos","Fundamentos teóricos",{t:"area",rows:12,max:4000,draft:"fundamentos",ai:true,hint:"Subapartados por variable y dimensión. Citas en rol pasivo, al final del párrafo (Autor, año)."}),"Máximo 9 páginas. Información especializada que sustenta las variables y la metodología.")}
+  ${blk("2.3","Definición de términos básicos",`${ter||'<div class="empty">Opcional. Máximo 10 términos; al exportar se ordenan alfabéticamente.</div>'}<div class="actions"><button class="btn" data-act="addTerm"${state.cap2.terminos.length>=10?" disabled":""}>Agregar término</button></div>`)}`;
+};
+function antCard(a,i){
+  const p=`ant.items.${i}`, tes=a.tipoFuente==="tesis";
+  return `<details class="ant" data-ant="${i}"${openAnt.has(i)?" open":""}>
+    <summary><span class="t">${esc(a.autoresCita||"Nuevo antecedente")} ${a.anio?`(${esc(a.anio)})`:""}<br><span style="font-weight:400;color:var(--muted);font-size:13px">${esc(a.titulo||"Sin título")}</span></span><span data-derived="antBadges:${i}"></span></summary>
+    <div class="body">
+      <div class="grid">
+        ${F(p+".autoresCita","Autores para citar",{ph:"Pérez y Ruiz",hint:"Como irá en el párrafo."})}
+        ${F(p+".autoresRef","Autores en formato APA",{ph:"Pérez, J. y Ruiz, M."})}
+        ${F(p+".anio","Año")}${F(p+".pais","País")}
+        ${F(p+".ambito","Ámbito",{t:"sel",o:AMB})}
+        ${F(p+".tipoFuente","Tipo de fuente",{t:"sel",o:[["articulo","Artículo científico"],["tesis","Tesis"]],rr:true})}
+        ${F(p+".titulo","Título",{t:"area",rows:2,span:true})}
+        ${F(p+".fuente",tes?"Universidad":"Revista")}
+        ${tes?F(p+".grado","Grado",{t:"sel",o:[["Tesis de pregrado","Pregrado"],["Tesis de maestría","Maestría"],["Tesis doctoral","Doctorado"]]})+F(p+".repositorio","Repositorio"):F(p+".vol","Volumen")+F(p+".num","Número")+F(p+".pags","Páginas o e-ID")}
+        ${F(p+".indexacion","Indexación o repositorio",{t:"sel",o:INDEX})}
+        ${F(p+".doi","DOI",{ph:"10.xxxx/xxxxx"})}${F(p+".url","Enlace (si no tiene DOI)")}
+        ${F(p+".diseno","Diseño del estudio",{t:"sel",o:[["","Elige…"],...DIS_OPTS,["otro","Otro"]]})}
+        ${F(p+".objetivo","Objetivo del estudio",{t:"area",rows:2})}
+        ${F(p+".muestra","Población y muestra")}${F(p+".instrumento","Instrumento")}
+        ${F(p+".prueba","Prueba estadística y valores",{ph:"Rho = 0.62; p < 0.05"})}
+        ${F(p+".resultado","Resultado principal",{t:"area",rows:2})}
+        ${F(p+".conclusion","Conclusión",{t:"area",rows:2})}
+        ${F(p+".aporte","Aporte a tu investigación",{t:"area",rows:2})}
+      </div>
+      ${F(p+".verificado","Verifiqué en la fuente original que el DOI, los autores, el año y los resultados son correctos",{t:"chk"})}
+      <div class="lbl">Párrafo para tu tesis</div><div class="para" data-derived="antPara:${i}"></div>
+      <div class="lbl">Referencia APA 7</div><div class="apa" data-derived="antApa:${i}"></div>
+      <div class="actions">
+        <span data-derived="antLinks:${i}"></span>
+        <button class="btn sm" data-act="copyPara" data-i="${i}">Copiar párrafo</button>
+        <button class="btn sm" data-act="improvePara" data-i="${i}">Mejorar párrafo con Claude</button>
+        <button class="btn sm del" data-act="del" data-path="ant.items" data-i="${i}" data-confirm="Toca otra vez para quitar">Quitar</button>
+      </div>
+      <div class="ai-out" data-aiout="antp${i}"></div>
+    </div></details>`;
+}
+
+R.cap3=()=>{
+  const c=state.cap3, cfg=state.config, exp=isExp(), m=c.muestra;
+  const vars=c.variables.map((v,i)=>`<div class="row-esp"><div class="rh"><b>Variable ${i+1}</b><button class="btn sm del" data-act="del" data-path="cap3.variables" data-i="${i}">Quitar</button></div><div class="grid">
+    ${F(`cap3.variables.${i}.nombre`,"Nombre")}
+    ${F(`cap3.variables.${i}.tipo`,"Clasificación",{t:"sel",o:[["independiente","Independiente"],["dependiente","Dependiente"],["correlativa","Correlativa"],["interferente","Interferente"],["única","Única (descriptiva)"]]})}
+    ${F(`cap3.variables.${i}.escala`,"Escala de medición",{t:"sel",o:ESCALAS})}
+    ${F(`cap3.variables.${i}.defCon`,"Definición conceptual",{t:"area",rows:2})}
+    ${F(`cap3.variables.${i}.defOp`,"Definición operacional",{t:"area",rows:2})}
+    ${F(`cap3.variables.${i}.dims`,"Dimensiones",{t:"area",rows:2})}
+    ${F(`cap3.variables.${i}.indicadores`,"Indicadores",{t:"area",rows:2})}
+    ${F(`cap3.variables.${i}.items`,"Ítems (números)",{ph:"1–10"})}
+    ${F(`cap3.variables.${i}.instrumento`,"Instrumento",{ph:"Cuestionario, ficha de observación…"})}
+  </div></div>`).join("");
+  const t1=state.cap1.esp.map((r,i)=>{
+    const rows=(c.tabla1[i]||[]).map((_,j)=>`<tr>
+      <td><input type="text" data-bind="cap3.tabla1.${i}.${j}.abstracta" value="${esc(c.tabla1[i][j].abstracta)}" aria-label="Variable abstracta"></td>
+      <td><input type="text" data-bind="cap3.tabla1.${i}.${j}.concreta" value="${esc(c.tabla1[i][j].concreta)}" aria-label="Variable concreta"></td>
+      <td><input type="text" data-bind="cap3.tabla1.${i}.${j}.medio" value="${esc(c.tabla1[i][j].medio)}" aria-label="Medio de registro"></td>
+      <td><input type="text" data-bind="cap3.tabla1.${i}.${j}.unidad" value="${esc(c.tabla1[i][j].unidad)}" aria-label="Unidad de medida"></td>
+      <td><button class="btn sm del" data-act="del" data-path="cap3.tabla1.${i}" data-i="${j}" aria-label="Quitar fila">×</button></td></tr>`).join("");
+    return `<div class="lbl">Objetivo específico ${i+1}: <span style="font-weight:400">${esc(r.oe||"(sin redactar)")}</span></div>
+      <div class="tbl"><table><thead><tr><th>Variable abstracta</th><th>Variable concreta (indicador)</th><th>Medio de registro</th><th>Unidad de medida</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="5" style="color:var(--muted)">Sin filas</td></tr>'}</tbody></table></div>
+      <div class="actions"><button class="btn sm" data-act="addT1" data-i="${i}">Agregar fila</button></div>`;
+  }).join("");
+  const proc=state.cap1.esp.map((r,i)=>F(`cap3.proc.${i}`,`3.4.${i+1} Actividades del objetivo específico ${i+1}`,{t:"area",rows:4,hint:esc(r.oe||""),ai:true})).join("");
+  return `<h2 class="chapter">Capítulo III · Materiales y métodos</h2>
+  <p class="lead">Diseño elegido: <b>${esc(DIS[cfg.diseno].label)}</b>. Puedes cambiarlo en Inicio.</p>
+  ${blk("3.1","Ámbito de la investigación",F("cap3.ambito","Ubicación política y geográfica",{t:"area",rows:4,ai:true,hint:"Distrito, provincia y región; coordenadas y altitud; contexto histórico o jurídico si corresponde."}))}
+  ${blk("3.2","Sistema de variables",`${vars||'<div class="empty">Genera la propuesta en Inicio o agrega variables.</div>'}
+    <div class="actions"><button class="btn" data-act="addVar">Agregar variable</button></div>
+    ${F("cap3.parametros","Parámetros o valores constantes",{t:"area",rows:2})}
+    <div class="lbl" style="margin-top:6px">Tabla 1 · Descripción de variables por objetivo específico</div>${t1}`,"Clasifica las variables en independientes, dependientes, correlativas o interferentes. La Tabla 1 se repite por cada objetivo específico.")}
+  ${blk("3.3.1","Tipo y nivel de la investigación",`<div class="grid">
+    <div class="f"><span class="lbl">Tipo</span><div>${{basica:"Básica",aplicada:"Aplicada",desarrollo:"Desarrollo experimental"}[cfg.tipo]}</div></div>
+    ${F("cap3.nivelTxt","Nivel")}
+  </div>`)}
+  ${blk("3.3.2","Población y muestra",`<div class="grid">
+    ${F("cap3.muestra.descripcion","Descripción de la población",{t:"area",rows:3,span:true})}
+    ${F("cap3.muestra.tipo","Tipo de cálculo",{t:"sel",rr:true,o:[["finita","Población finita (fórmula)"],["infinita","Población infinita o desconocida"],["censal","Censal (toda la población)"],["noprob","No probabilístico"]]})}
+    ${F("cap3.muestra.N","Población (N)",{t:"num"})}
+    ${m.tipo==="finita"||m.tipo==="infinita"?F("cap3.muestra.conf","Nivel de confianza",{t:"sel",o:[["90","90 % (Z = 1.645)"],["95","95 % (Z = 1.96)"],["99","99 % (Z = 2.576)"]]})+F("cap3.muestra.p","Probabilidad de éxito (p)",{t:"num",hint:"0.5 si no hay estudios previos."})+F("cap3.muestra.e","Margen de error (e)",{t:"num",hint:"0.05 = 5 %"}):""}
+    ${F("cap3.muestra.muestreo","Técnica de muestreo",{t:"sel",o:["Aleatorio simple","Estratificado con afijación proporcional","Por conglomerados","Sistemático","Por conveniencia","Intencional o por juicio","Censal"].map(x=>[x,x])})}
+    ${exp?F("cap3.muestra.t","Número de tratamientos o grupos",{t:"num"})+F("cap3.muestra.r","Repeticiones o bloques",{t:"num"}):""}
+  </div>
+  <div data-derived="muestra"></div>
+  <div class="grid">${F("cap3.muestra.inclusion","Criterios de inclusión",{t:"area",rows:3})}${F("cap3.muestra.exclusion","Criterios de exclusión",{t:"area",rows:3})}</div>`)}
+  ${blk("3.3.3","Diseño analítico, muestral y experimental",`
+    <div class="lbl">a) Esquema del diseño</div><div class="scheme">${esc(DIS[cfg.diseno].esquema)}</div>
+    <div style="font-size:13px;color:var(--muted)">${DIS[cfg.diseno].leyenda.map(esc).join(" · ")}</div>
+    <div class="grid">${F("cap3.tecnicas","Técnicas e instrumentos de recolección",{t:"area",rows:3,ph:"Técnica: encuesta. Instrumento: cuestionario de 20 ítems en escala de Likert…"})}
+    ${F("cap3.validez","Validez",{t:"area",rows:3,ph:"Juicio de tres expertos; V de Aiken ≥ 0.80…"})}</div>
+    <div class="lbl">b) Confiabilidad: alfa de Cronbach con la prueba piloto</div>
+    ${F("cap3.alfa","Pega la matriz de respuestas",{t:"area",rows:5,hint:"Una fila por participante y una columna por ítem, separados por espacios, tabulaciones o punto y coma. Puedes copiarla de Excel.",ph:"4 5 3 4 5\n3 4 4 3 4\n5 5 4 5 5"})}
+    <div data-derived="cronbach"></div>
+    <div class="lbl">c) Análisis estadístico</div>
+    <div class="grid">
+      ${F("cap3.escala","Escala de medición de las variables",{t:"sel",o:ESCALAS})}
+      ${F("cap3.normal","¿Los datos tienen distribución normal?",{t:"sel",o:[["","Aún no lo sé"],["si","Sí (p > 0.05)"],["no","No (p < 0.05)"]]})}
+      ${cfg.diseno==="experimental"?F("cap3.grupos","Número de tratamientos a comparar",{t:"num"}):""}
+    </div>
+    <div data-derived="prueba"></div>
+    ${F("cap3.analisis","Redacción del análisis estadístico",{t:"area",rows:4,ai:true,hint:"Software (SPSS, R, InfoStat, Jamovi), nivel de significancia α = 0.05 y regla de decisión.",ph:"Los datos se procesarán en SPSS v. 27…"})}
+  `)}
+  ${blk("3.4","Procedimientos de la investigación",`${proc}${F("cap3.transversal",`3.4.${state.cap1.esp.length+1} Actividades complementarias o transversales`,{t:"area",rows:3})}`,"Actividades, equipos, frecuencia y momentos de evaluación por cada objetivo específico.")}
+  ${blk("3.5 · 3.6 · 3.7","Autorizaciones, bioseguridad y ética",`<div class="grid">
+    ${F("cap3.autorizaciones","3.5 Autorizaciones y permisos",{t:"area",rows:3})}
+    ${F("cap3.ambiental","3.6 Control ambiental y bioseguridad",{t:"area",rows:3})}
+    ${F("cap3.etica","3.7 Cumplimiento de principios éticos",{t:"area",rows:5,span:true,ai:true})}
+  </div>`)}`;
+};
+
+R.cap4=()=>{
+  const c=state.cap4, P=Math.max(1,Math.min(24,parseInt(c.periodos,10)||6));
+  const budget=(key,title)=>`<div class="lbl">${title}</div><div class="tbl"><table><thead><tr><th>Partida</th><th>Descripción</th><th class="n">Cant.</th><th class="n">Valor unit. S/</th><th class="n">Valor total S/</th><th></th></tr></thead><tbody>
+    ${c[key].map((r,i)=>`<tr><td><input type="text" data-bind="cap4.${key}.${i}.partida" value="${esc(r.partida)}" aria-label="Partida" style="min-width:90px"></td><td><input type="text" data-bind="cap4.${key}.${i}.desc" value="${esc(r.desc)}" aria-label="Descripción" style="min-width:180px"></td><td><input type="number" step="any" data-bind="cap4.${key}.${i}.cant" value="${esc(r.cant)}" aria-label="Cantidad" style="width:80px"></td><td><input type="number" step="any" data-bind="cap4.${key}.${i}.vu" value="${esc(r.vu)}" aria-label="Valor unitario" style="width:100px"></td><td class="n" data-derived="rowTot:${key}:${i}"></td><td><button class="btn sm del" data-act="del" data-path="cap4.${key}" data-i="${i}" aria-label="Quitar fila">×</button></td></tr>`).join("")||'<tr><td colspan="6" style="color:var(--muted)">Sin filas</td></tr>'}
+    </tbody></table></div><div class="actions"><button class="btn sm" data-act="addBud" data-k="${key}">Agregar fila</button></div>`;
+  const head=Array.from({length:P},(_,j)=>`<th class="n">${esc(c.unidad)} ${j+1}</th>`).join("");
+  const acts=c.acts.map((a,i)=>`<tr><td><input type="text" data-bind="cap4.acts.${i}.nombre" value="${esc(a.nombre)}" aria-label="Actividad"></td>${Array.from({length:P},(_,j)=>`<td><input type="checkbox" data-bind="cap4.acts.${i}.m.${j}"${a.m&&a.m[j]?" checked":""} aria-label="${esc(a.nombre)} ${esc(c.unidad)} ${j+1}"></td>`).join("")}<td><button class="btn sm del" data-act="del" data-path="cap4.acts" data-i="${i}" aria-label="Quitar actividad">×</button></td></tr>`).join("");
+  return `<h2 class="chapter">Capítulo IV · Aspectos administrativos</h2>
+  <p class="lead">Recursos, presupuesto en soles y cronograma de actividades.</p>
+  ${blk("4.1","Recursos",`<div class="grid">${F("cap4.rrhh","4.1.1 Recursos humanos",{t:"area",rows:4,hint:"Nombres, ORCID, afiliación, competencias y rol."})}${F("cap4.materiales","4.1.2 Medios materiales y servicios",{t:"area",rows:4})}</div>`)}
+  ${blk("4.2","Presupuesto",`${budget("bienes","Tabla 2 · Presupuesto en bienes y servicios")}${budget("equipos","Tabla 3 · Presupuesto en equipamiento")}
+    <div class="grid">${F("cap4.admin","Otros gastos administrativos y autorizaciones (S/)",{t:"num"})}${F("cap4.tc","Tipo de cambio (si usas moneda extranjera)")}${F("cap4.financiamiento","Fuente de financiamiento")}</div>
+    <div data-derived="presupuesto"></div>`,"Los gastos administrativos incluyen un 5 % de los costos directos, que se calcula automáticamente.")}
+  ${blk("4.3","Cronograma de actividades",`<div class="grid">${F("cap4.periodos","Número de periodos",{t:"num",rr:true})}${F("cap4.unidad","Unidad",{t:"sel",rr:true,o:[["Mes","Meses"],["Sem.","Semanas"]]})}</div>
+    <div class="tbl gantt"><table><thead><tr><th>Actividad</th>${head}<th></th></tr></thead><tbody>${acts||`<tr><td colspan="${P+2}" style="color:var(--muted)">Sin actividades</td></tr>`}</tbody></table></div>
+    <div class="actions"><button class="btn sm" data-act="addAct">Agregar actividad</button>${c.acts.length?"":'<button class="btn sm" data-act="seedActs">Usar actividades sugeridas</button>'}</div>`)}`;
+};
+
+function matrizHTML(forDoc){
+  const c1=state.cap1, c3=state.cap3, cfg=state.config, n=nFinal(), rec=recomendar();
+  const P=t=>`<p>${esc(t||"—")}</p>`, H=t=>`<div class="mh"${forDoc?' style="font-weight:bold;margin-top:6px"':""}>${t}</div>`;
+  const vars=c3.variables.map(v=>`<p><b>${esc(v.nombre)}</b> (${esc(v.tipo)})${v.dims?`<br>Dimensiones: ${esc(v.dims)}`:""}${v.indicadores?`<br>Indicadores: ${esc(v.indicadores)}`:""}</p>`).join("")||"<p>—</p>";
+  const m=c3.muestra;
+  const met = `${H("Tipo")}${P({basica:"Básica",aplicada:"Aplicada",desarrollo:"Desarrollo experimental"}[cfg.tipo])}${H("Nivel")}${P(c3.nivelTxt)}${H("Diseño")}${P(DIS[cfg.diseno].label)}<pre style="font-family:monospace;font-size:11px;margin:0 0 8px;white-space:pre">${esc(DIS[cfg.diseno].esquema.split("\n\n")[0])}</pre>${H("Población y muestra")}${P((m.N?`N = ${m.N}. `:"")+(isFinite(n)?`n = ${n}. `:"")+(m.muestreo?`Muestreo: ${low(m.muestreo)}.`:""))}${H("Técnicas e instrumentos")}${P(c3.tecnicas)}${H("Análisis estadístico")}${P(rec.main)}`;
+  return `<table class="matriz"${forDoc?' border="1" cellpadding="6" style="border-collapse:collapse;width:100%;font-size:10pt"':""}><thead><tr><th>Problema</th><th>Objetivos</th><th>Hipótesis</th><th>Variables e indicadores</th><th>Metodología</th></tr></thead><tbody><tr>
+    <td>${H("Problema general")}${P(c1.pg)}${H("Problemas específicos")}${c1.esp.map((r,i)=>P(`PE${i+1}: ${r.pe||"—"}`)).join("")}</td>
+    <td>${H("Objetivo general")}${P(c1.og)}${H("Objetivos específicos")}${c1.esp.map((r,i)=>P(`OE${i+1}: ${r.oe||"—"}`)).join("")}</td>
+    <td>${H("Hipótesis general")}${P(c1.hg)}${c1.hg0?P("H0: "+c1.hg0):""}${H("Hipótesis específicas")}${c1.esp.map((r,i)=>P(`HE${i+1}: ${r.h1||"—"}`)).join("")}</td>
+    <td>${vars}</td><td>${met}</td></tr></tbody></table>`;
+}
+R.matriz=()=>`<h2 class="chapter">Matriz de consistencia</h2>
+  <p class="lead">Se llena sola con lo que escribes en los capítulos. Para cambiar algo, edítalo en su pestaña y la matriz se actualiza.</p>
+  <section class="blk"><div><b>Título:</b> ${esc(state.ficha.titulo||"—")}<br><b>Autor(a):</b> ${esc(state.ficha.autor||"—")}</div>
+  <div class="tbl">${matrizHTML(false)}</div>
+  <div class="actions"><button class="btn pri" data-act="exportMatriz">Descargar matriz en Word</button><button class="btn" data-act="previewMatriz">Vista previa y copiar</button></div></section>
+  ${blk("","Operacionalización de variables",`<div class="tbl">${operTable(false)}</div>`)}`;
+function operTable(forDoc){
+  return `<table${forDoc?' border="1" cellpadding="6" style="border-collapse:collapse;width:100%;font-size:10pt"':""}><thead><tr><th>Variable</th><th>Definición conceptual</th><th>Definición operacional</th><th>Dimensiones</th><th>Indicadores</th><th>Ítems</th><th>Escala</th><th>Instrumento</th></tr></thead><tbody>${state.cap3.variables.map(v=>`<tr><td><b>${esc(v.nombre)}</b><br><small>${esc(v.tipo)}</small></td><td>${esc(v.defCon)}</td><td>${esc(v.defOp)}</td><td>${esc(v.dims)}</td><td>${esc(v.indicadores)}</td><td>${esc(v.items)}</td><td>${esc((ESCALAS.find(e=>e[0]===v.escala)||["",""])[1])}</td><td>${esc(v.instrumento)}</td></tr>`).join("")||'<tr><td colspan="8">Sin variables</td></tr>'}</tbody></table>`;
+}
+function allRefs(){
+  const a=state.ant.items.map(antAPA);
+  const o=String(state.refs.otras||"").split("\n").map(x=>x.trim()).filter(Boolean).map(esc);
+  return [...a,...o].sort((x,y)=>x.replace(/<[^>]+>/g,"").localeCompare(y.replace(/<[^>]+>/g,""),"es"));
+}
+R.referencias=()=>{
+  const an=state.refs.anexos;
+  const AX=[["matriz","Matriz de consistencia"],["operacionalizacion","Operacionalización de variables"],["instrumento","Instrumento de recolección de datos"],["validacion","Fichas de validación por juicio de expertos"],["consentimiento","Consentimiento informado"],["croquis","Croquis o mapa de ubicación"],["base","Base de datos de la prueba piloto"]];
+  return `<h2 class="chapter">Referencias bibliográficas y anexos</h2>
+  <p class="lead">Las referencias de los antecedentes se generan solas en APA 7.ª edición. Agrega abajo las de tus fundamentos teóricos.</p>
+  ${blk("","Referencias (orden alfabético)",`<div style="display:flex;flex-direction:column;gap:8px" data-derived="refList"></div>
+    ${F("refs.otras","Otras referencias (una por línea, ya en formato APA)",{t:"area",rows:6,ph:"Hernández-Sampieri, R. y Mendoza, C. (2018). Metodología de la investigación: las rutas cuantitativa, cualitativa y mixta. McGraw-Hill."})}
+    <div data-derived="citeCheck"></div>`)}
+  ${blk("","Anexos",AX.map(([k,l])=>F(`refs.anexos.${k}`,l,{t:"chk"})).join(""))}
+  ${blk("","Exportar el proyecto completo",`<p class="guide" style="margin:0">Documento con el orden del formato: carátula, ficha, capítulos I a IV, referencias y anexos (matriz y operacionalización).</p>
+    <div class="actions"><button class="btn pri" data-act="exportDoc">Descargar proyecto en Word</button><button class="btn" data-act="previewDoc">Vista previa y copiar</button></div>`)}`;
+};
+function checks(){
+  const f=state.ficha, c1=state.cap1, A=state.ant.items, c3=state.cap3, desc=state.config.diseno==="descriptivo";
+  const cnt=k=>A.filter(a=>a.ambito===k).length;
+  const orc=[f.autorOrcid,f.asesorOrcid,f.coasesorOrcid].filter(Boolean);
+  return [
+    ["ficha","Título escrito, con 20 palabras como máximo",!!f.titulo&&words(f.titulo)<=20],
+    ["ficha","Autor y asesor registrados",!!f.autor&&!!f.asesor],
+    ["ficha","ORCID con formato válido",orc.length>0&&orc.every(x=>ORCID_RE.test(x.trim()))],
+    ["ficha","Resumen escrito, con 300 palabras como máximo",!!f.resumen&&words(f.resumen)<=300],
+    ["cap1","Marco del problema y justificación redactados",words(c1.marco)>80&&words(c1.justificacion)>50],
+    ["cap1","Problema, objetivo e hipótesis generales completos",!!c1.pg&&!!c1.og&&(desc||(!!c1.hg&&!!c1.hg0))],
+    ["cap1","Cada problema específico tiene objetivo e hipótesis",c1.esp.length>0&&c1.esp.every(r=>r.pe&&r.oe&&(desc||(r.h1&&r.h0)))],
+    ["cap2",`Al menos 6 antecedentes (tienes ${A.length})`,A.length>=6],
+    ["cap2","Todos los antecedentes son de los últimos 5 años",A.length>0&&A.every(a=>parseInt(a.anio,10)>=YEAR-5)],
+    ["cap2",`Hay internacionales, nacionales y locales (${cnt("internacional")} · ${cnt("nacional")} · ${cnt("local")})`,cnt("internacional")>=2&&cnt("nacional")>=2&&cnt("local")>=1],
+    ["cap2","Todos los antecedentes tienen un diseño coherente con el tuyo",A.length>0&&A.every(a=>antCoh(a)[0]!=="bad"&&a.diseno)],
+    ["cap2","Ningún antecedente queda por verificar",A.length>0&&A.every(a=>a.verificado)],
+    ["cap2","Fundamentos teóricos redactados",words(state.cap2.fundamentos)>150],
+    ["cap3","Variables operacionalizadas (dimensiones, indicadores y escala)",c3.variables.length>0&&c3.variables.every(v=>v.dims&&v.indicadores&&v.escala&&v.defCon&&v.defOp)],
+    ["cap3","Tamaño de muestra calculado o justificado",isFinite(nFinal())||(c3.muestra.tipo==="noprob"&&!!c3.muestra.descripcion)],
+    ["cap3","Prueba estadística definida (escala y normalidad)",desc||(!!c3.escala&&(!!c3.normal||c3.escala!=="intervalo"))],
+    ["cap3","Técnicas, instrumentos y validez descritos",!!c3.tecnicas&&!!c3.validez],
+    ["cap3","Procedimientos por cada objetivo específico",c1.esp.every((_,i)=>words(c3.proc[i])>10)],
+    ["cap4","Presupuesto con al menos una partida valorizada",budgetTotals().direct>0],
+    ["cap4","Cronograma con actividades programadas",state.cap4.acts.some(a=>(a.m||[]).some(Boolean))],
+    ["referencias","Referencias completas",allRefs().length>=6]
+  ];
+}
+R.revision=()=>{
+  const ch=checks(), ok=ch.filter(c=>c[2]).length, pct=Math.round(ok/ch.length*100);
+  return `<h2 class="chapter">Revisión final</h2>
+  <p class="lead">Lista de verificación según el manual. Lo que falta aparece en rojo con un acceso directo a su pestaña.</p>
+  <section class="blk"><div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap"><div class="bigscore">${pct}%</div><div style="color:var(--muted)">${ok} de ${ch.length} criterios cumplidos</div></div>
+  <ul class="checklist">${ch.map(([t,l,v])=>`<li class="${v?"ok":"no"}"><span class="ic" aria-hidden="true">${v?"✓":"!"}</span><span>${esc(l)}</span>${v?"":`<button class="btn sm ghost go" data-tab="${t}">Ir a ${esc(TABS.find(x=>x[0]===t)[1])}</button>`}</li>`).join("")}</ul></section>`;
+};
+
+/* ---------- Derivados ---------- */
+function budgetTotals(){
+  const c=state.cap4, s=k=>c[k].reduce((a,r)=>a+((num(r.cant)||0)*(num(r.vu)||0)),0);
+  const b=s("bienes"), e=s("equipos"), direct=b+e, five=direct*0.05, adm=five+(num(c.admin)||0);
+  return {b,e,direct,five,adm,total:direct+adm};
+}
+const D = {
+  genPreview(){ const f=state.ficha; return f.titulo?`<div class="note info"><b>Título actual:</b> ${esc(f.titulo)} <span class="count${words(f.titulo)>20?" over":""}">(${words(f.titulo)}/20 palabras)</span></div>`:""; },
+  coherencia(){
+    const e=state.cap1.esp, desc=state.config.diseno==="descriptivo", miss=[];
+    e.forEach((r,i)=>{ const f=[]; if(!r.pe)f.push("problema"); if(!r.oe)f.push("objetivo"); if(!desc&&!r.h1)f.push("hipótesis H1"); if(!desc&&!r.h0)f.push("hipótesis H0"); if(f.length) miss.push(`Específico ${i+1}: falta ${f.join(", ")}.`); });
+    const verb = e.filter(r=>r.oe && !/^[A-ZÁÉÍÓÚ][a-záéíóúñ]+(ar|er|ir)\b/.test(r.oe.trim())).length;
+    if(verb) miss.push(`${verb} objetivo(s) no empiezan con un verbo en infinitivo.`);
+    return miss.length?`<div class="note bad">${miss.map(esc).join("<br>")}</div>`:`<div class="note ok">${e.length} problemas, ${e.length} objetivos${desc?"":` y ${e.length} hipótesis`} específicos alineados.</div>`;
+  },
+  antStats(){
+    const A=state.ant.items, c=k=>A.filter(a=>a.ambito===k).length;
+    const vig=A.filter(a=>parseInt(a.anio,10)>=YEAR-5).length, coh=A.filter(a=>antCoh(a)[0]==="ok").length, ver=A.filter(a=>a.verificado).length;
+    const pl=(ok,t)=>`<span class="pill ${ok?"ok":"warn"}">${t}</span>`;
+    return `<div class="stats">${pl(A.length>=6,`${A.length}/6 antecedentes`)}${pl(c("internacional")>=2,`${c("internacional")} internacionales`)}${pl(c("nacional")>=2,`${c("nacional")} nacionales`)}${pl(c("local")>=1,`${c("local")} locales`)}${pl(vig===A.length&&A.length>0,`${vig} vigentes`)}${pl(coh===A.length&&A.length>0,`${coh} con diseño coherente`)}${pl(ver===A.length&&A.length>0,`${ver} verificados`)}</div>`;
+  },
+  antBadges(i){ const a=state.ant.items[+i]; if(!a) return ""; const c=antCoh(a), y=antAge(a); return `<span class="stats"><span class="pill ${y[0]}">${esc(y[1])}</span><span class="pill ${c[0]}">${c[1]}</span><span class="pill ${a.verificado?"ok":"warn"}">${a.verificado?"Verificado":"Por verificar"}</span></span>`; },
+  antPara(i){ const a=state.ant.items[+i]; return a?esc(antPara(a)):""; },
+  antApa(i){ const a=state.ant.items[+i]; return a?antAPA(a):""; },
+  antLinks(i){ const a=state.ant.items[+i]; if(!a) return ""; const d=String(a.doi||"").replace(/^https?:\/\/(dx\.)?doi\.org\//,"").trim();
+    return `<span class="links">${d?`<a href="https://doi.org/${esc(d)}" target="_blank" rel="noopener">Abrir DOI ↗</a>`:""}${a.url?`<a href="${esc(/^https?:/.test(a.url)?a.url:"https://"+a.url)}" target="_blank" rel="noopener">Abrir enlace ↗</a>`:""}${a.titulo?`<a href="https://scholar.google.com/scholar?q=${encodeURIComponent('"'+a.titulo+'"')}" target="_blank" rel="noopener">Buscar título ↗</a>`:""}</span>`; },
+  muestra(){ const r=calcMuestra(), m=state.cap3.muestra; let h=r.html; if(isExp()&&num(m.t)>0&&num(m.r)>0) h+=`<div class="result">Unidades experimentales: ${m.t} tratamientos × ${m.r} repeticiones = <b>${num(m.t)*num(m.r)}</b></div>`; return h; },
+  cronbach(){ const r=cronbach(state.cap3.alfa); if(!r) return ""; if(r.err) return `<div class="note bad">${esc(r.err)}</div>`; return `<div class="result">α de Cronbach = <b>${r.a.toFixed(3)}</b> &nbsp;·&nbsp; ${r.k} ítems, ${r.n} participantes &nbsp;·&nbsp; confiabilidad <span class="pill ${r.a>=.7?"ok":"bad"}">${r.lvl}</span></div>`; },
+  prueba(){
+    const r=recomendar(), n=nFinal(), fnoexp=fam(state.config.diseno)==="noexp"&&state.config.diseno!=="descriptivo";
+    return `<div class="note info rec"><span>Prueba de normalidad: <b>${esc(r.norm)}</b></span><strong>${esc(r.main)}</strong><span>${esc(r.why)}</span>${r.extra.map(x=>`<span>${esc(x)}</span>`).join("")}<span>Nivel de significancia α = 0.05. Regla de decisión: si p &lt; 0.05 se rechaza H0 y se acepta H1.</span>${isFinite(n)?`<span>n considerado: ${n}</span>`:""}</div>
+    ${fnoexp?`<div class="tbl"><table><thead><tr><th>Valor del coeficiente (±)</th><th>Interpretación</th></tr></thead><tbody>${[["0.00 – 0.19","Correlación muy baja"],["0.20 – 0.39","Correlación baja"],["0.40 – 0.59","Correlación moderada"],["0.60 – 0.79","Correlación alta"],["0.80 – 1.00","Correlación muy alta"]].map(r=>`<tr><td style="font-family:var(--f-mono)">${r[0]}</td><td>${r[1]}</td></tr>`).join("")}</tbody></table></div>`:""}`;
+  },
+  rowTot(k,i){ const r=state.cap4[k][+i]; return r?money((num(r.cant)||0)*(num(r.vu)||0)).replace("S/ ",""):""; },
+  presupuesto(){ const t=budgetTotals(); return `<div class="tbl"><table><tbody>
+    <tr><td>Bienes y servicios</td><td class="n">${money(t.b)}</td></tr><tr><td>Equipamiento</td><td class="n">${money(t.e)}</td></tr>
+    <tr><td>Gastos administrativos (5 % + otros)</td><td class="n">${money(t.adm)}</td></tr>
+    <tr><th>Total</th><th class="n">${money(t.total)}</th></tr></tbody></table></div>`; },
+  refList(){ const r=allRefs(); return r.length? r.map(x=>`<div class="apa">${x}</div>`).join("") : `<div class="empty">Las referencias aparecerán aquí cuando agregues antecedentes u otras fuentes.</div>`; },
+  citeCheck(){
+    const text=[state.cap1.marco,state.cap1.justificacion,state.cap2.fundamentos].join(" ");
+    const cites=[...text.matchAll(/([A-ZÁÉÍÓÚÑ][A-Za-zÁÉÍÓÚáéíóúñ\-]+)(?: et al\.| y [A-ZÁÉÍÓÚÑ][A-Za-záéíóúñ\-]+)?,? \(?(\d{4})\)?/g)].map(m=>[m[1],m[2]]);
+    const refsTxt=allRefs().join(" ").replace(/<[^>]+>/g,"");
+    const miss=[...new Set(cites.filter(([a,y])=>!(refsTxt.includes(a)&&refsTxt.includes(y))).map(([a,y])=>`${a} (${y})`))];
+    return miss.length?`<div class="note bad">Citas en el texto sin referencia en la lista: ${miss.map(esc).join(", ")}.</div>`:(cites.length?`<div class="note ok">Todas las citas detectadas en el texto tienen su referencia.</div>`:"");
+  }
+};
+function refreshDerived(){
+  document.querySelectorAll("[data-derived]").forEach(el=>{ const [n,...a]=el.dataset.derived.split(":"); if(D[n]){ const h=D[n](...a); if(el.innerHTML!==h) el.innerHTML=h; } });
+  document.querySelectorAll("[data-count]").forEach(el=>{ const v=get(el.dataset.count), w=words(v), mx=+el.dataset.max; el.textContent=`${w}/${mx} ${el.dataset.unit}`; el.classList.toggle("over",w>mx); });
+  document.querySelectorAll("[data-orcid]").forEach(el=>{ const v=String(get(el.dataset.orcid)||"").trim(); el.textContent=v?(ORCID_RE.test(v)?"✓ formato válido":"Formato: 0000-0000-0000-0000"):""; el.classList.toggle("over",!!v&&!ORCID_RE.test(v)); });
+  header();
+}
+function header(){
+  $("#hTitle").textContent = state.ficha.titulo || "Proyecto sin título";
+  const ch=checks(), ok=ch.filter(c=>c[2]).length, pct=Math.round(ok/ch.length*100);
+  $("#pBar").style.width=pct+"%"; $("#pTxt").textContent=`Avance según la revisión: ${pct}%`;
+}
+
+/* ---------- Render ---------- */
+function renderTabs(){
+  $("#tabs").innerHTML=TABS.map(([k,l])=>`<button role="tab" aria-selected="${k===tab}" data-tab="${k}">${l}</button>`).join("");
+  const cur=$("#tabs").querySelector('[aria-selected="true"]'); if(cur) cur.scrollIntoView({block:"nearest",inline:"nearest"});
+}
+function render(keepScroll){
+  const y=window.scrollY;
+  renderTabs();
+  const ban = state.meta.ejemplo?`<div class="banner"><span><b>Estás viendo un ejemplo</b> (hábitos de estudio y rendimiento académico). Puedes editarlo o empezar con tus propios datos.</span><span class="actions"><button class="btn sm pri" data-act="nuevo">Empezar mi tesis en blanco</button><button class="btn sm" data-act="keepEx">Seguir con estos datos</button></span></div>`:"";
+  $("#panel").innerHTML = ban + R[tab]();
+  refreshDerived();
+  if(keepScroll) window.scrollTo(0,y);
+}
+function go(t){ tab=t; try{ history.replaceState(null,"","#"+t); }catch(e){} render(); window.scrollTo(0,0); }
+
+/* ---------- Guardado ---------- */
+let db=null, uid=null, saveT=null, remoteOK=false;
+function status(kind,txt){ $("#sDot").className="dot "+(kind||""); $("#sTxt").textContent=txt; }
+function scheduleSave(){ clearTimeout(saveT); status("warn","Guardando…"); saveT=setTimeout(saveNow,700); }
+async function saveNow(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){}
+  if(db&&uid&&remoteOK){
+    const keys=[...dirty]; dirty.clear();
+    try{
+      for(const k of keys){ await db.doc(`data/users/${uid}/p_${k}`).set({v: JSON.parse(JSON.stringify(state[k]))}); }
+      status("ok","Guardado en tu cuenta");
+    }catch(e){ keys.forEach(k=>dirty.add(k)); status("warn","Guardado solo en este navegador"); }
+  } else status(remoteOK?"ok":"warn", remoteOK?"Guardado en tu cuenta":"Guardado en este navegador");
+}
+function normalize(s){
+  const b=blank();
+  for(const k of SECTIONS){ if(s[k]==null) s[k]=b[k]; else if(!Array.isArray(b[k])&&typeof b[k]==="object") s[k]=Object.assign({},b[k],s[k]); }
+  s.cap3.muestra=Object.assign({},b.cap3.muestra,s.cap3.muestra||{});
+  s.refs.anexos=Object.assign({},b.refs.anexos,s.refs.anexos||{});
+  ["esp"].forEach(k=>{ if(!Array.isArray(s.cap1[k])||!s.cap1[k].length) s.cap1[k]=b.cap1[k]; });
+  if(!Array.isArray(s.ant.items)) s.ant.items=[];
+  return s;
+}
+async function boot(){
+  let local=null; try{ local=JSON.parse(localStorage.getItem(LS_KEY)||"null"); }catch(e){}
+  state = normalize(local || example());
+  render();
+  status("warn", local?"Guardado en este navegador":"Ejemplo sin guardar");
+  if(!window.claude){ status("warn","Se guarda en este navegador"); return; }
+  try{
+    const [u,d]=await Promise.all([window.claude?.use?.("user"),window.claude?.use?.("db")]);
+    if(!u||!d){ status("warn","Guardado en este navegador"); return; }
+    uid=await u.id(); db=d; if(!uid){ status("warn","Guardado en este navegador"); return; }
+    const snaps=await Promise.all(SECTIONS.map(k=>db.doc(`data/users/${uid}/p_${k}`).get()));
+    remoteOK=true;
+    const remote={}; let any=false; snaps.forEach((s,i)=>{ if(s.exists){ any=true; remote[SECTIONS[i]]=s.data().v; } });
+    const rTime = remote.meta?.updatedAt||0, lTime = state.meta?.updatedAt||0;
+    if(any && rTime>=lTime){ state=normalize(remote); try{ localStorage.setItem(LS_KEY,JSON.stringify(state)); }catch(e){} render(true); status("ok","Guardado en tu cuenta"); }
+    else if(local && lTime>0){ SECTIONS.forEach(k=>dirty.add(k)); await saveNow(); }
+    else status("ok","Conectado a tu cuenta");
+  }catch(e){ remoteOK=false; status("warn","Guardado en este navegador"); }
+}
+
+/* ---------- Claude ---------- */
+let samplePromise=null;
+function getSample(){ if(!samplePromise) samplePromise=Promise.resolve(window.claude?.use?.("sample")).catch(()=>null); return samplePromise; }
+const ERR={not_granted:"No se dio permiso para usar Claude en esta página.",rate_limited:"Demasiadas solicitudes seguidas. Espera un momento y vuelve a intentarlo.",prompt_too_large:"El texto es demasiado largo. Envíalo por partes.",refused:"Claude no pudo responder a esta solicitud.",invalid_json:"La respuesta no tuvo el formato esperado. Vuelve a intentarlo.",cancelled:"Solicitud cancelada."};
+const errMsg=e=>ERR[e?.code]||"No se pudo conectar con Claude. Vuelve a intentarlo en unos segundos.";
+function ctx(){
+  const c=state.config, c1=state.cap1;
+  return `Título: ${state.ficha.titulo}\nDiseño: ${DIS[c.diseno].label}\nVariable 1${isExp()?" (independiente)":""}: ${c.v1} — dimensiones: ${c.dims1}\nVariable 2${isExp()?" (dependiente)":""}: ${c.v2} — dimensiones: ${c.dims2}\nPoblación: ${c.poblacion}\nLugar y año: ${c.lugar}, ${c.anio}\nProblema general: ${c1.pg}\nObjetivo general: ${c1.og}\nHipótesis general: ${c1.hg}\nObjetivos específicos: ${c1.esp.map(r=>r.oe).filter(Boolean).join(" | ")}`;
+}
+const RULES="Reglas: español académico formal, impersonal y en tercera persona; tiempo futuro para las acciones del proyecto; párrafos de máximo 8 líneas; NO inventes datos, cifras, estadísticas, autores ni citas; conserva las citas que ya existan tal como están; donde una afirmación requiera respaldo bibliográfico escribe [CITA REQUERIDA]. Devuelve solo el texto, sin títulos ni comentarios.";
+async function ask(outKey,btn,prompt,onAccept,json){
+  const out=document.querySelector(`[data-aiout="${outKey}"]`);
+  const sample=await getSample();
+  if(!sample){ if(out) out.innerHTML=`<span>Esta función necesita abrir la página dentro de Claude con tu sesión iniciada.</span>`; return; }
+  btn&&(btn.disabled=true); if(out) out.textContent="Pensando…";
+  try{
+    if(json){ const v=await sample.json(prompt,{modelTier:"complex"}); onAccept(v,out); }
+    else{
+      const {text}=await sample(prompt,{onText:({text})=>{ if(out) out.textContent=text; }});
+      out.innerHTML=`<div>${esc(text)}</div><div class="actions"><button class="btn sm pri" data-act="aiUse">Usar este texto</button><button class="btn sm" data-act="aiDiscard">Descartar</button></div>`;
+      out._accept=()=>onAccept(text);
+    }
+  }catch(e){ if(out) out.innerHTML=`<span>${esc(e?.text?e.text+"\n\n":"")}${esc(errMsg(e))}</span>`; }
+  finally{ btn&&(btn.disabled=false); }
+}
+const DRAFT={
+  marco:"Redacta el MARCO GENERAL DEL PROBLEMA (máximo 2 páginas, unas 700 a 900 palabras), de lo general a lo particular: contexto internacional, nacional y local, hasta llegar al problema concreto de la población de estudio. Cierra con el problema de investigación.",
+  justificacion:"Redacta la JUSTIFICACIÓN (máximo 1 página, unas 350 a 450 palabras), de lo particular a lo general, cubriendo la justificación teórica, práctica, metodológica y social, y el efecto que tendrá lograr los objetivos.",
+  fundamentos:"Redacta un BORRADOR ORIENTATIVO de los FUNDAMENTOS TEÓRICOS organizado en subapartados numerados (2.2.1, 2.2.2…) por variable y por dimensión: definición, teorías o modelos que la sustentan, dimensiones e importancia. Usa citas en rol pasivo al final del párrafo SOLO como [CITA REQUERIDA]; no nombres autores.",
+  resumen:"Redacta el RESUMEN del proyecto en un solo párrafo de máximo 300 palabras con: introducción, objetivo, materiales y métodos (tipo, diseño, población, muestra, instrumento y análisis estadístico) y resultados esperados. Usa solo los datos del contexto."
+};
+
+/* ---------- Exportación ---------- */
+function docHTML(){
+  const f=state.ficha, c1=state.cap1, c2=state.cap2, c3=state.cap3, c4=state.cap4, cfg=state.config, t=budgetTotals(), rec=recomendar(), P=x=>x?String(x).split(/\n+/).filter(Boolean).map(p=>`<p>${esc(p)}</p>`).join(""):"<p>[Por completar]</p>";
+  const h1=x=>`<h1 style="font-size:13pt;text-align:center;page-break-before:always">${x}</h1>`, h2=x=>`<h2 style="font-size:12pt">${x}</h2>`, h3=x=>`<h3 style="font-size:12pt;font-style:italic">${x}</h3>`;
+  const tbl=(head,rows)=>`<table border="1" cellpadding="5" style="border-collapse:collapse;width:100%;font-size:10pt"><tr>${head.map(x=>`<th>${x}</th>`).join("")}</tr>${rows}</table>`;
+  const bud=k=>tbl(["Partida","Descripción","Cant.","Valor unit. S/","Valor total S/"],state.cap4[k].map(r=>`<tr><td>${esc(r.partida)}</td><td>${esc(r.desc)}</td><td>${esc(r.cant)}</td><td>${esc(r.vu)}</td><td>${((num(r.cant)||0)*(num(r.vu)||0)).toFixed(2)}</td></tr>`).join(""));
+  const Pn=Math.max(1,Math.min(24,parseInt(c4.periodos,10)||6));
+  const terms=[...c2.terminos].filter(x=>x.t).sort((a,b)=>a.t.localeCompare(b.t,"es"));
+  const ants=[...state.ant.items];
+  return `<div style="font-family:'Times New Roman',serif;font-size:12pt;line-height:1.5">
+  <div style="text-align:center"><p><b>FACULTAD DE ${esc((f.facultad||"").toUpperCase())}</b></p><p><b>ESCUELA PROFESIONAL DE ${esc((f.escuela||"").toUpperCase())}</b></p><br><p><b>Proyecto de tesis</b></p><p style="font-size:14pt"><b>${esc(f.titulo)}</b></p><p>Para optar el ${esc(f.grado)}</p><br><p><b>Autor:</b><br>${esc(f.autor)}<br>${esc(f.autorOrcid)}</p><p><b>Asesor:</b><br>${esc(f.asesor)}<br>${esc(f.asesorOrcid)}</p>${f.coasesor?`<p><b>Coasesor:</b><br>${esc(f.coasesor)}<br>${esc(f.coasesorOrcid)}</p>`:""}<br><p>${esc((cfg.lugar||"Tarapoto").split(",")[0])}, Perú</p><p>${esc(cfg.anio)}</p></div>
+  ${h1("Ficha de identificación")}
+  ${tbl(["Campo","Detalle"],[["Título del proyecto",f.titulo],["Área de investigación",f.area],["Línea de investigación",f.linea],["Sublínea de investigación",f.sublinea],["Grupo de investigación",f.grupo],["Tipo de investigación",{basica:"Básica",aplicada:"Aplicada",desarrollo:"Desarrollo experimental"}[cfg.tipo]],["Autor",`${f.autor} ${f.autorOrcid}`],["Facultad / Escuela",`${f.facultad} / ${f.escuela}`],["Asesor",`${f.asesor} ${f.asesorOrcid}`],["Dependencia local de soporte",`${f.dependencia} ${f.unidad}`],["Coasesor",`${f.coasesor} ${f.coasesorOrcid}`],["Contraparte científica",`${f.contraparte} ${f.contraPais} ${f.contraOrcid}`]].map(([a,b])=>`<tr><td><b>${a}</b></td><td>${esc(b)}</td></tr>`).join(""))}
+  <p><b>Resumen</b></p>${P(f.resumen)}
+  ${h1("CAPÍTULO I<br>INTRODUCCIÓN A LA INVESTIGACIÓN")}
+  ${h2("1.1. Marco general del problema")}${P(c1.marco)}
+  ${h2("1.2. Formulación del problema de investigación")}<p><b>Problema general</b></p><p>${esc(c1.pg)}</p><p><b>Problemas específicos</b></p>${c1.esp.map((r,i)=>`<p>PE${i+1}: ${esc(r.pe)}</p>`).join("")}
+  ${h2("1.3. Hipótesis de investigación")}<p><b>Hipótesis general</b></p><p>H1: ${esc(c1.hg)}</p>${c1.hg0?`<p>H0: ${esc(c1.hg0)}</p>`:""}<p><b>Hipótesis específicas</b></p>${c1.esp.map((r,i)=>r.h1?`<p>HE${i+1}: ${esc(r.h1)}</p><p>H0: ${esc(r.h0)}</p>`:"").join("")}
+  ${h2("1.4. Objetivos")}${h3("1.4.1. Objetivo general")}<p>${esc(c1.og)}</p>${h3("1.4.2. Objetivos específicos")}${c1.esp.map((r,i)=>`<p>OE${i+1}: ${esc(r.oe)}</p>`).join("")}
+  ${h2("1.5. Justificación de la investigación")}${P(c1.justificacion)}
+  ${h1("CAPÍTULO II<br>MARCO TEÓRICO")}
+  ${h2("2.1. Antecedentes de la investigación")}${ants.length?ants.map(a=>`<p style="text-align:justify">${esc(antPara(a))}</p>`).join(""):"<p>[Por completar]</p>"}
+  ${h2("2.2. Fundamentos teóricos")}${P(c2.fundamentos)}
+  ${h2("2.3. Definición de términos básicos")}${terms.length?terms.map(x=>`<p><b>${esc(x.t)}:</b> ${esc(x.d)}</p>`).join(""):"<p>No aplica.</p>"}
+  ${h1("CAPÍTULO III<br>MATERIALES Y MÉTODOS")}
+  ${h2("3.1. Ámbito de la investigación")}${P(c3.ambito)}
+  ${h2("3.2. Sistema de variables")}${c3.variables.map(v=>`<p><b>${esc(v.nombre)}</b> (variable ${esc(v.tipo)})${v.defCon?`: ${esc(v.defCon)}`:""}</p>`).join("")}${c3.parametros?`<p>${esc(c3.parametros)}</p>`:""}
+  <p><b>Tabla 1</b><br><i>Descripción de variables por objetivo específico</i></p>
+  ${c1.esp.map((r,i)=>`<table border="1" cellpadding="5" style="border-collapse:collapse;width:100%;font-size:10pt"><tr><th colspan="4" style="text-align:left">Objetivo específico N.° ${i+1}: ${esc(r.oe)}</th></tr><tr><th>Variable abstracta</th><th>Variable concreta</th><th>Medio de registro</th><th>Unidad de medida</th></tr>${(c3.tabla1[i]||[]).map(x=>`<tr><td>${esc(x.abstracta)}</td><td>${esc(x.concreta)}</td><td>${esc(x.medio)}</td><td>${esc(x.unidad)}</td></tr>`).join("")}</table>`).join("<br>")}
+  ${h2("3.3. Diseño de la investigación")}${h3("3.3.1. Tipo y nivel de la investigación")}<p>Tipo: ${esc({basica:"básica",aplicada:"aplicada",desarrollo:"desarrollo experimental"}[cfg.tipo])}. Nivel: ${esc(low(c3.nivelTxt))}. Enfoque cuantitativo.</p>
+  ${h3("3.3.2. Población y muestra")}${P(c3.muestra.descripcion)}${c3.muestra.N?`<p>Población: N = ${esc(c3.muestra.N)}.</p>`:""}${calcMuestra().html.replace(/<div class="formula">/,'<p style="font-family:Courier New">').replace(/<\/div><div class="result">/,'</p><p>').replace(/<\/div>$/,"</p>").replace(/<b>|<\/b>/g,"")}<p>Técnica de muestreo: ${esc(low(c3.muestra.muestreo))}.</p>${c3.muestra.inclusion?`<p><b>Criterios de inclusión:</b> ${esc(c3.muestra.inclusion)}</p>`:""}${c3.muestra.exclusion?`<p><b>Criterios de exclusión:</b> ${esc(c3.muestra.exclusion)}</p>`:""}
+  ${h3("3.3.3. Diseño analítico, muestral y experimental")}<p><b>a) Diseño ${esc(low(DIS[cfg.diseno].label))}</b></p><pre style="font-family:'Courier New';font-size:11pt">${esc(DIS[cfg.diseno].esquema)}</pre><p>Donde: ${DIS[cfg.diseno].leyenda.map(esc).join("; ")}.</p>
+  <p><b>b) Técnicas e instrumentos</b></p>${P(c3.tecnicas)}<p><b>Validez y confiabilidad</b></p>${P(c3.validez)}${(()=>{const r=cronbach(c3.alfa);return r&&!r.err?`<p>La confiabilidad, estimada con el alfa de Cronbach en una prueba piloto con ${r.n} participantes, fue α = ${r.a.toFixed(3)} (${r.lvl}).</p>`:"";})()}
+  <p><b>c) Análisis estadístico</b></p>${c3.analisis?P(c3.analisis):`<p>Se aplicará la prueba de normalidad de ${esc(rec.norm)} y, según su resultado, ${esc(rec.main)}, con un nivel de significancia α = 0.05.</p>`}
+  ${h2("3.4. Procedimientos de la investigación")}${c1.esp.map((r,i)=>h3(`3.4.${i+1}. Actividades del objetivo específico ${i+1}`)+P(c3.proc[i])).join("")}${c3.transversal?h3(`3.4.${c1.esp.length+1}. Actividades complementarias o transversales`)+P(c3.transversal):""}
+  ${h2("3.5. Autorizaciones y permisos")}${P(c3.autorizaciones)}${h2("3.6. Control ambiental y bioseguridad")}${P(c3.ambiental)}${h2("3.7. Cumplimiento de principios éticos")}${P(c3.etica)}
+  ${h1("CAPÍTULO IV<br>ASPECTOS ADMINISTRATIVOS")}
+  ${h2("4.1. Recursos")}${h3("4.1.1. Recursos humanos")}${P(c4.rrhh)}${h3("4.1.2. Medios materiales y servicios")}${P(c4.materiales)}
+  ${h2("4.2. Presupuesto")}<p><b>Tabla 2</b><br><i>Presupuesto en bienes y servicios</i></p>${bud("bienes")}<p><b>Tabla 3</b><br><i>Presupuesto en equipamiento</i></p>${bud("equipos")}
+  <p>Gastos administrativos (5 % de costos directos más otros): ${money(t.adm)}. <b>Presupuesto total: ${money(t.total)}</b>. Financiamiento: ${esc(c4.financiamiento)}.${c4.tc?` Tipo de cambio: ${esc(c4.tc)}.`:""}</p>
+  ${h2("4.3. Cronograma de actividades")}<p><b>Tabla 4</b><br><i>Cronograma de actividades</i></p>${tbl(["Actividad",...Array.from({length:Pn},(_,j)=>`${esc(c4.unidad)} ${j+1}`)],c4.acts.map(a=>`<tr><td>${esc(a.nombre)}</td>${Array.from({length:Pn},(_,j)=>`<td style="text-align:center">${a.m&&a.m[j]?"X":""}</td>`).join("")}</tr>`).join(""))}
+  ${h1("REFERENCIAS BIBLIOGRÁFICAS")}${allRefs().map(r=>`<p style="margin-left:36pt;text-indent:-36pt">${r}</p>`).join("")||"<p>[Por completar]</p>"}
+  ${h1("ANEXOS")}${state.refs.anexos.matriz?`<p><b>Anexo 1.</b> Matriz de consistencia</p>${matrizHTML(true)}`:""}${state.refs.anexos.operacionalizacion?`<p><b>Anexo 2.</b> Operacionalización de variables</p>${operTable(true)}`:""}
+  ${[["instrumento","Instrumento de recolección de datos"],["validacion","Fichas de validación por juicio de expertos"],["consentimiento","Consentimiento informado"],["croquis","Croquis o mapa de ubicación"],["base","Base de datos de la prueba piloto"]].filter(([k])=>state.refs.anexos[k]).map(([,l],i)=>`<p><b>Anexo ${i+3}.</b> ${l}</p>`).join("")}
+  </div>`;
+}
+function matrizDoc(){ return `<div style="font-family:'Times New Roman',serif;font-size:11pt"><p style="text-align:center"><b>Matriz de consistencia</b></p><p><b>Título:</b> ${esc(state.ficha.titulo)}</p><p><b>Autor (a):</b> ${esc(state.ficha.autor)}</p>${matrizHTML(true)}</div>`; }
+function wordWrap(body,landscape){ return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>@page{size:${landscape?"29.7cm 21cm;mso-page-orientation:landscape":"21cm 29.7cm"};margin:2.5cm}body{font-family:'Times New Roman';font-size:12pt}th{background:#dbe5f3}td,th{vertical-align:top}</style></head><body>${body}</body></html>`; }
+function localDownload(name,blob){ const u=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),2000); }
+async function saveWord(name,body,landscape){
+  if(!window.claude){ localDownload(name+".doc",new Blob(["\ufeff"+wordWrap(body,landscape)],{type:"application/msword"})); toast("Descargado. Ábrelo con Word y guárdalo como .docx."); return; }
+  const dl=await Promise.resolve(window.claude?.use?.("downloads")).catch(()=>null);
+  if(!dl){ preview(body,name); toast("La descarga no está disponible aquí. Usa «Copiar» y pégalo en Word."); return; }
+  const blob=new Blob(["﻿"+wordWrap(body,landscape)],{type:"application/msword"});
+  try{ await dl.save({filename:name+".doc",data:blob}); }
+  catch(e){
+    if(e?.code==="rejected_extension"){ try{ await dl.save({filename:name+".html",data:new Blob([wordWrap(body,landscape)],{type:"text/html"})}); toast("Se descargó como .html: ábrelo con Word y guárdalo como .docx."); }catch(e2){ if(e2?.code!=="declined") preview(body,name); } }
+    else if(e?.code!=="declined"){ preview(body,name); toast("No se pudo descargar. Usa «Copiar» y pégalo en Word."); }
+  }
+}
+function preview(body,name){
+  const m=document.createElement("div"); m.className="modal"; m.innerHTML=`<div class="box" role="dialog" aria-label="Vista previa"><div class="mhd"><b>Vista previa</b><span class="actions"><button class="btn sm pri" data-m="copy">Copiar para Word</button><button class="btn sm" data-m="dl">Descargar</button><button class="btn sm" data-m="close">Cerrar</button></span></div><div class="doc" contenteditable="false">${body}</div></div>`;
+  document.body.appendChild(m);
+  m.addEventListener("click",async ev=>{
+    const a=ev.target.closest("[data-m]")?.dataset.m; if(ev.target===m||a==="close"){ m.remove(); return; }
+    if(a==="dl") saveWord(name,body,name.includes("matriz"));
+    if(a==="copy"){ const docEl=m.querySelector(".doc");
+      try{ await navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([body],{type:"text/html"}),"text/plain":new Blob([docEl.innerText],{type:"text/plain"})})]); toast("Copiado. Pégalo en Word con Ctrl + V."); }
+      catch(e){ const r=document.createRange(); r.selectNodeContents(docEl); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast("Texto seleccionado: cópialo con Ctrl + C."); } }
+  });
+}
+async function copyText(t){ try{ await navigator.clipboard.writeText(t); toast("Copiado."); }catch(e){ toast("No se pudo copiar automáticamente."); } }
+
+/* ---------- Eventos ---------- */
+let rafD=0;
+document.addEventListener("input",e=>{
+  const el=e.target, p=el.dataset?.bind; if(!p) return;
+  set(p, el.type==="checkbox"?el.checked:el.value);
+  cancelAnimationFrame(rafD); rafD=requestAnimationFrame(refreshDerived);
+});
+document.addEventListener("change",e=>{
+  const el=e.target;
+  if(el.dataset?.bind){ set(el.dataset.bind, el.type==="checkbox"?el.checked:el.value);
+    if(el.dataset.bind==="cap4.periodos"||el.dataset.bind==="cap4.unidad"||el.hasAttribute("data-rr")) render(true); else refreshDerived(); }
+  if(el.id==="fileIn" && el.files[0]){ const r=new FileReader(); r.onload=()=>{ try{ const s=JSON.parse(r.result); if(!s.config||!s.cap1) throw 0; state=normalize(s); state.meta.ejemplo=false; SECTIONS.forEach(k=>dirty.add(k)); state.meta.updatedAt=Date.now(); scheduleSave(); render(); toast("Respaldo importado."); }catch(x){ toast("El archivo no es un respaldo válido de este proyecto."); } el.value=""; }; r.readAsText(el.files[0]); }
+});
+document.addEventListener("toggle",e=>{ const d=e.target; if(d.matches&&d.matches("details.ant")){ const i=+d.dataset.ant; d.open?openAnt.add(i):openAnt.delete(i); } },true);
+const pendingConfirm=new WeakMap();
+document.addEventListener("click",async e=>{
+  const tb=e.target.closest("[data-tab]"); if(tb){ go(tb.dataset.tab); return; }
+  const b=e.target.closest("[data-act]"); if(!b) return;
+  if(b.dataset.confirm && !pendingConfirm.get(b)){ const old=b.textContent; pendingConfirm.set(b,true); b.classList.add("confirm"); b.textContent=b.dataset.confirm; setTimeout(()=>{ if(b.isConnected){ pendingConfirm.delete(b); b.classList.remove("confirm"); b.textContent=old; } },4500); return; }
+  const a=b.dataset.act, i=+b.dataset.i;
+  const mut=(fn)=>{ fn(); state.meta.updatedAt=Date.now(); scheduleSave(); render(true); };
+  switch(a){
+    case "generar": mut(()=>{ generar(state); ["config","ficha","cap1","cap3"].forEach(k=>dirty.add(k)); if(!state.cap4.acts.length){ state.cap4.acts=defaultActs(); dirty.add("cap4"); } }); toast("Propuesta generada. Revísala en Ficha, Capítulo I y Capítulo III."); break;
+    case "nuevo": mut(()=>{ state=blank(); state.cap4.acts=defaultActs(); state.meta.updatedAt=Date.now(); SECTIONS.forEach(k=>dirty.add(k)); openAnt.clear(); }); go("inicio"); break;
+    case "keepEx": mut(()=>{ state.meta.ejemplo=false; dirty.add("meta"); }); break;
+    case "del": { const arr=get(b.dataset.path); if(Array.isArray(arr)) mut(()=>{ arr.splice(i,1); dirty.add(b.dataset.path.split(".")[0]);
+        if(b.dataset.path==="cap1.esp"){ state.cap3.tabla1.splice(i,1); state.cap3.proc.splice(i,1); dirty.add("cap3"); }
+        if(b.dataset.path==="ant.items"){ openAnt.clear(); } }); break; }
+    case "addEsp": mut(()=>{ state.cap1.esp.push({pe:"",oe:"",h1:"",h0:""}); state.cap3.tabla1.push([{abstracta:"",concreta:"",medio:"",unidad:""}]); state.cap3.proc.push(""); dirty.add("cap1"); dirty.add("cap3"); }); break;
+    case "addVar": mut(()=>{ state.cap3.variables.push({nombre:"",tipo:"interferente",defCon:"",defOp:"",dims:"",indicadores:"",items:"",escala:"",instrumento:""}); dirty.add("cap3"); }); break;
+    case "addT1": mut(()=>{ (state.cap3.tabla1[i]=state.cap3.tabla1[i]||[]).push({abstracta:"",concreta:"",medio:"",unidad:""}); dirty.add("cap3"); }); break;
+    case "addBud": mut(()=>{ state.cap4[b.dataset.k].push({partida:"",desc:"",cant:"",vu:""}); dirty.add("cap4"); }); break;
+    case "addAct": mut(()=>{ state.cap4.acts.push({nombre:"",m:[]}); dirty.add("cap4"); }); break;
+    case "seedActs": mut(()=>{ state.cap4.acts=defaultActs(); dirty.add("cap4"); }); break;
+    case "addTerm": mut(()=>{ state.cap2.terminos.push({t:"",d:""}); dirty.add("cap2"); }); break;
+    case "addAnt": mut(()=>{ state.ant.items.unshift(blankAnt()); openAnt.clear(); openAnt.add(0); dirty.add("ant"); }); break;
+    case "copyPara": copyText(antPara(state.ant.items[i])); break;
+    case "backup": {
+      const dl=await Promise.resolve(window.claude?.use?.("downloads")).catch(()=>null);
+      const data=JSON.stringify(state,null,1);
+      if(!window.claude){ localDownload("respaldo-proyecto-tesis.json",new Blob([data],{type:"application/json"})); toast("Respaldo descargado."); break; }
+      if(dl){ try{ await dl.save({filename:"respaldo-proyecto-tesis.json",data:new Blob([data],{type:"application/json"})}); }catch(x){ if(x?.code!=="declined"){ copyText(data); toast("No se pudo descargar; el respaldo se copió al portapapeles."); } } }
+      else { copyText(data); toast("Respaldo copiado al portapapeles."); }
+      break; }
+    case "restore": $("#fileIn").click(); break;
+    case "exportDoc": saveWord("proyecto-de-tesis",docHTML(),false); break;
+    case "previewDoc": preview(docHTML(),"proyecto-de-tesis"); break;
+    case "exportMatriz": saveWord("matriz-de-consistencia",matrizDoc(),true); break;
+    case "previewMatriz": preview(matrizDoc(),"matriz-de-consistencia"); break;
+    case "aiUse": { const out=b.closest(".ai-out"); out._accept&&out._accept(); out.innerHTML=""; break; }
+    case "aiDiscard": b.closest(".ai-out").innerHTML=""; break;
+    case "improve": { const p=b.dataset.path, v=get(p); if(!String(v||"").trim()){ toast("Escribe primero un texto para mejorar."); return; }
+      ask(p,b,`Eres asesor de tesis en una universidad peruana. Mejora la redacción académica del siguiente texto de la sección «${b.dataset.label}» de un PROYECTO de tesis cuantitativa.\n${RULES}\n\nContexto del proyecto:\n${ctx()}\n\nTexto a mejorar:\n${v}`, t=>{ set(p,t); render(true); }); break; }
+    case "draft": { const p=b.dataset.path, k=b.dataset.kind;
+      const extra = k==="resumen"? `\nMuestra: ${nFinal()}. Instrumento: ${state.cap3.tecnicas}. Prueba estadística: ${recomendar().main}.`:"";
+      ask(p,b,`Eres asesor de tesis en una universidad peruana. ${DRAFT[k]}\n${RULES}\n\nContexto del proyecto:\n${ctx()}${extra}\n\nTexto actual del estudiante (puedes partir de él):\n${get(p)||"(vacío)"}`, t=>{ set(p,t); render(true); }); break; }
+    case "improvePara": { const ant=state.ant.items[i];
+      ask("antp"+i,b,`Mejora la redacción de este párrafo de antecedente de tesis. Mantén al autor en rol activo al inicio del párrafo, con el formato «Autor (año), en país, …». Conserva EXACTAMENTE los autores, año, país, muestra y valores estadísticos; no agregues datos nuevos. Español académico, un solo párrafo. Devuelve solo el párrafo.\n\nPárrafo:\n${antPara(ant)}`, t=>{ copyText(t); toast("Párrafo mejorado copiado. Pégalo en tu documento."); }); break; }
+    case "extract": { const txt=$("#extractTxt").value.trim(); if(txt.length<40){ toast("Pega primero el resumen o los datos del artículo."); return; }
+      ask("ant",b,`Extrae la ficha bibliográfica y metodológica del siguiente texto de un artículo científico o tesis. Usa SOLO información presente en el texto; si un dato no aparece, deja la cadena vacía. No inventes nada.\nDevuelve un objeto JSON con estas claves (todas cadenas): autoresCita (apellidos para citar en español, p. ej. "Pérez y Ruiz" o "Pérez et al."), autoresRef (en formato APA 7: "Pérez, J., Ruiz, M. y Soto, L."), anio, pais (país donde se hizo el estudio), ambito ("internacional" si el país no es Perú, "nacional" si es Perú, "local" si es en San Martín o la Amazonía peruana), tipoFuente ("articulo" o "tesis"), titulo, fuente (nombre de la revista o universidad), vol, num, pags, grado (solo tesis: "Tesis de pregrado", "Tesis de maestría" o "Tesis doctoral"), doi (solo el código 10.xxxx/...), url, diseno (una de: "descriptivo","correlacional","causal","pre","cuasi","experimental","otro"), objetivo (verbo en infinitivo), muestra, instrumento, prueba (prueba estadística y valores, p. ej. "Rho = 0.62; p < 0.05"), resultado, conclusion.\n\nTexto:\n${txt}`,
+        (v,out)=>{ const it=Object.assign(blankAnt(), sanitizeAnt(v), {origen:"extraido",verificado:false}); state.ant.items.unshift(it); openAnt.clear(); openAnt.add(0); dirty.add("ant"); state.meta.updatedAt=Date.now(); scheduleSave(); render(true); const o=document.querySelector('[data-aiout="ant"]'); if(o) o.innerHTML="<span>Ficha creada arriba de la lista. Revísala y completa lo que falte.</span>"; $("#extractTxt").value=""; }, true); break; }
+    case "suggest": { const c=state.config;
+      ask("ant",b,`Eres bibliotecario académico especializado en investigación cuantitativa. Sugiere hasta 6 investigaciones (artículos en revistas indexadas o tesis de repositorios oficiales) que puedan servir como antecedentes.\nCriterios: publicadas entre ${YEAR-5} y ${YEAR}; con diseño ${DIS[c.diseno].label}; que estudien "${c.v1}" ${c.v2?`y "${c.v2}"`:""} o variables muy afines; idealmente en ${c.poblacion||"poblaciones similares"}; combina contextos internacional, nacional (Perú) y local (San Martín/Amazonía).\nREGLAS ESTRICTAS: incluye SOLO trabajos de cuya existencia estés muy seguro. Nunca inventes autores, títulos, revistas, DOI ni valores estadísticos. Si no conoces el DOI o un dato con certeza, deja la cadena vacía. Si no conoces trabajos que cumplan, devuelve una lista vacía. Es preferible una lista corta y real a una lista completa e inventada.\nDevuelve JSON: {"items":[{autoresCita, autoresRef, anio, pais, ambito ("internacional"|"nacional"|"local"), tipoFuente ("articulo"|"tesis"), titulo, fuente, doi, url, diseno ("descriptivo"|"correlacional"|"causal"|"pre"|"cuasi"|"experimental"|"otro"), muestra, instrumento, prueba, resultado, conclusion}]}`,
+        (v,out)=>{ const arr=Array.isArray(v?.items)?v.items:(Array.isArray(v)?v:[]); if(!arr.length){ out.innerHTML="<span>Claude no encontró trabajos que pueda confirmar con seguridad. Usa los buscadores de arriba y pega aquí los resúmenes que encuentres.</span>"; return; }
+          arr.slice(0,6).reverse().forEach(x=>state.ant.items.unshift(Object.assign(blankAnt(),sanitizeAnt(x),{origen:"claude",verificado:false})));
+          openAnt.clear(); dirty.add("ant"); state.meta.updatedAt=Date.now(); scheduleSave(); render(true);
+          const o=document.querySelector('[data-aiout="ant"]'); if(o) o.innerHTML=`<span>Se agregaron ${Math.min(arr.length,6)} sugerencias marcadas como «por verificar». Abre cada DOI o busca el título antes de usarlas; descarta las que no encuentres.</span>`; }, true); break; }
+  }
+});
+function sanitizeAnt(v){ const o={}; const k=Object.keys(blankAnt()); if(v&&typeof v==="object") for(const key of k){ if(typeof v[key]==="string"||typeof v[key]==="number") o[key]=String(v[key]).trim(); } if(o.diseno&&!DIS[o.diseno]&&o.diseno!=="otro") o.diseno="otro"; if(o.ambito&&!["internacional","nacional","local"].includes(o.ambito)) o.ambito=""; if(o.tipoFuente!=="tesis") o.tipoFuente="articulo"; return o; }
+
+window.addEventListener("hashchange",()=>{ const t=location.hash.slice(1); if(TABS.some(x=>x[0]===t)&&t!==tab){ tab=t; render(); } });
+boot();
+})();
+</script>
+
+</body>
+</html>
